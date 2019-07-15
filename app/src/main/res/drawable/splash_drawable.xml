@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Fill the background with a solid color -->
+    <item android:drawable="@color/grey" />
+
+    <item>
+        <bitmap
+            android:src="@drawable/redhouse"
+            android:gravity="center" />
+    </item>
+
+</layer-list>

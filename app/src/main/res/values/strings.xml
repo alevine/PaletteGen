@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PaletteGen</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="camera_button_content_description">Button to take a picture</string>
+</resources>
