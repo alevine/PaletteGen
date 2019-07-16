@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path
+        name="images_for_palette"
+        path="Android/data/com.cs4520.palettegen/files/Pictures" />
+</paths>
