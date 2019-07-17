@@ -3,4 +3,8 @@
     <string name="title_activity_splash">SplashActivity</string>
     <string name="camera_button_content_description">Button to take a picture</string>
     <string name="uploadButtonDesc">Button to upload an image from file</string>
+    <string name="cameraPrompt">Take a Picture</string>
+    <string name="uploadPrompt">Upload an Image</string>
+    <string name="uploadHint">Or upload from URL</string>
+    <string name="urlImageDesc">Upload from URL Image</string>
 </resources>

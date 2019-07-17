@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -19,7 +19,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageButton cameraButton;
+    Button cameraButton;
     String currentPhotoPath;
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
