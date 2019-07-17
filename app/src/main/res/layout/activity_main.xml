@@ -7,6 +7,12 @@
     android:gravity="center"
     tools:context=".MainActivity">
 
+    <LinearLayout
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_width="0px"
+        android:layout_height="0px" />
+
     <Button
         android:id="@+id/cameraButton"
         android:drawableTop="@drawable/ic_camera"
@@ -39,8 +45,8 @@
             android:contentDescription="@string/urlImageDesc" />
 
         <EditText
-            android:focusedByDefault="false"
             android:id="@+id/urlUpload"
+            android:focusedByDefault="false"
             android:layout_weight="0.9"
             android:hint="@string/uploadHint"
             android:textSize="25sp"
@@ -48,6 +54,8 @@
             android:layout_marginEnd="20dp"
             android:autofillHints="Image upload from URL"
             android:inputType="textUri"
-            android:layout_width="0dp" />
+            android:layout_width="0dp"
+            android:nextFocusUp="@id/urlUpload"
+            android:nextFocusLeft="@id/urlUpload" />
     </LinearLayout>
 </LinearLayout>

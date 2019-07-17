@@ -20,8 +20,10 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     Button cameraButton;
+    Button uploadButton;
     String currentPhotoPath;
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_PICK_IMAGE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         cameraButton = findViewById(R.id.cameraButton);
+        uploadButton = findViewById(R.id.uploadButton);
 
         // Add onClick listener for the camera button
         // Uses an Intent to start the external camera Activity
@@ -60,13 +63,30 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // Add onClick listener for the upload button
+        uploadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                getIntent.setType("image/*");
+
+                Intent pickIntent = new Intent(Intent.ACTION_PICK);
+                pickIntent.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+
+                Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
+
+                startActivityForResult(chooserIntent, REQUEST_PICK_IMAGE);
+            }
+        });
     }
 
     /**
      * Attribution: Obtained from the official Google Android documentation website.
-     * <p>
+     *
      * https://developer.android.com/training/camera/photobasics
-     * <p>
+     *
      * Modified slightly for our purposes.
      */
     private File createImageFile() throws IOException {
@@ -92,6 +112,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Intent moveToPaletteIntent = new Intent(MainActivity.this, PaletteActivity.class);
+
+            moveToPaletteIntent.putExtra("currentPhotoLocation", currentPhotoPath);
+            startActivity(moveToPaletteIntent);
+        } else if (requestCode == REQUEST_PICK_IMAGE && resultCode == RESULT_OK) {
             Intent moveToPaletteIntent = new Intent(MainActivity.this, PaletteActivity.class);
 
             moveToPaletteIntent.putExtra("currentPhotoLocation", currentPhotoPath);
