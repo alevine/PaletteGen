@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -159,6 +160,11 @@ public class MainActivity extends AppCompatActivity {
      * This AsyncTask is used to download an image from url and then move directly to PaletteActivity
      */
     private class DownloadURLImageTask extends AsyncTask<String, Void, Bitmap> {
+        public int status = OK;
+        static final int OK = 1;
+        static final int IO_ERROR = 2;
+        static final int BAD_URL = 3;
+
         @Override
         protected Bitmap doInBackground(String... urls) {
             String url = urls[0];
@@ -169,9 +175,10 @@ public class MainActivity extends AppCompatActivity {
                 bm = BitmapFactory.decodeStream(in);
             } catch (MalformedURLException e) {
                 // If the user enters a bad url we need to let them know
-                Toast toast = Toast.makeText(getApplicationContext(), "Bad URL", Toast.LENGTH_SHORT);
-                toast.show();
+                status = BAD_URL;
+                return null;
             } catch (IOException e) {
+                status = IO_ERROR;
                 Log.e("DownloadURLImageTask failed - IO open failed", e.getMessage(), e);
             }
 
@@ -181,11 +188,12 @@ public class MainActivity extends AppCompatActivity {
                 imageFile = createImageFile();
             }
             catch (IOException e) {
+                status = IO_ERROR;
                 Log.e("DownloadURLImageTask failed - could not create file", e.getMessage(), e);
             }
 
-            // Continue only if the file was created
-            if(imageFile != null) {
+            // Continue only if the file was created and the bitmap downloaded
+            if(imageFile != null && bm != null) {
                 try {
                     FileOutputStream out = new FileOutputStream(imageFile);
                     // Should have no effect on quality
@@ -197,10 +205,19 @@ public class MainActivity extends AppCompatActivity {
                 } catch (FileNotFoundException e) {
                     Log.e("DownloadURLImageTask failed - file not found", e.getMessage(), e);
                 } catch (IOException e) {
+                    status = IO_ERROR;
                     Log.e("DownloadURLImageTask failed - IO flush or close failed", e.getMessage(), e);
                 }
             }
             return bm;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if(status == DownloadURLImageTask.BAD_URL) {
+                Toast toast = Toast.makeText(getApplicationContext(), "Invalid URL entered.", Toast.LENGTH_SHORT);
+                toast.show();
+            }
         }
     }
 
