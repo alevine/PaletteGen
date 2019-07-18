@@ -37,6 +37,7 @@
         android:orientation="horizontal">
 
         <ImageButton
+            android:id="@+id/urlUploadButton"
             android:layout_weight="0.1"
             android:src="@drawable/ic_upload_external"
             android:background="@android:color/transparent"

@@ -1,18 +1,30 @@
 package com.cs4520.palettegen;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -21,9 +33,12 @@ public class MainActivity extends AppCompatActivity {
 
     Button cameraButton;
     Button uploadButton;
+    ImageButton uploadFromURLButton;
+    EditText uploadFromURLEditText;
     String currentPhotoPath;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_PICK_IMAGE = 2;
+    static final int REQUEST_URL_IMAGE = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
 
         cameraButton = findViewById(R.id.cameraButton);
         uploadButton = findViewById(R.id.uploadButton);
+        uploadFromURLButton = findViewById(R.id.urlUploadButton);
+        uploadFromURLEditText = findViewById(R.id.urlUpload);
 
         // Add onClick listener for the camera button
         // Uses an Intent to start the external camera Activity
@@ -80,6 +97,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(chooserIntent, REQUEST_PICK_IMAGE);
             }
         });
+
+        // Add onClick listener for the upload through URL button
+        uploadFromURLButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DownloadURLImageTask task = new DownloadURLImageTask();
+                task.execute(uploadFromURLEditText.getText().toString());
+            }
+        });
     }
 
     /**
@@ -121,9 +147,61 @@ public class MainActivity extends AppCompatActivity {
 
             moveToPaletteIntent.putExtra("currentPhotoLocation", currentPhotoPath);
             startActivity(moveToPaletteIntent);
+        } else if (requestCode == REQUEST_URL_IMAGE && resultCode == RESULT_OK) {
+            Intent moveToPaletteIntent = new Intent(MainActivity.this, PaletteActivity.class);
+
+            moveToPaletteIntent.putExtra("currentPhotoLocation", currentPhotoPath);
+            startActivity(moveToPaletteIntent);
         }
     }
 
+    /**
+     * This AsyncTask is used to download an image from url and then move directly to PaletteActivity
+     */
+    private class DownloadURLImageTask extends AsyncTask<String, Void, Bitmap> {
+        @Override
+        protected Bitmap doInBackground(String... urls) {
+            String url = urls[0];
+            Bitmap bm = null;
+            // Need to grab file from url
+            try {
+                InputStream in = new URL(url).openStream();
+                bm = BitmapFactory.decodeStream(in);
+            } catch (MalformedURLException e) {
+                // If the user enters a bad url we need to let them know
+                Toast toast = Toast.makeText(getApplicationContext(), "Bad URL", Toast.LENGTH_SHORT);
+                toast.show();
+            } catch (IOException e) {
+                Log.e("DownloadURLImageTask failed - IO open failed", e.getMessage(), e);
+            }
 
+            // Need to create a temporary location for the downloaded image
+            File imageFile = null;
+            try {
+                imageFile = createImageFile();
+            }
+            catch (IOException e) {
+                Log.e("DownloadURLImageTask failed - could not create file", e.getMessage(), e);
+            }
+
+            // Continue only if the file was created
+            if(imageFile != null) {
+                try {
+                    FileOutputStream out = new FileOutputStream(imageFile);
+                    // Should have no effect on quality
+                    bm.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                    out.flush();
+                    out.close();
+                    // Deliberately call OnActivityResult in case new handling is introduced there
+                    onActivityResult(REQUEST_URL_IMAGE, RESULT_OK, null);
+                } catch (FileNotFoundException e) {
+                    Log.e("DownloadURLImageTask failed - file not found", e.getMessage(), e);
+                } catch (IOException e) {
+                    Log.e("DownloadURLImageTask failed - IO flush or close failed", e.getMessage(), e);
+                }
+            }
+            return bm;
+        }
+    }
 
 }
