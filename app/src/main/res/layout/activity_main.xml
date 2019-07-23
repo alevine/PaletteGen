@@ -10,8 +10,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <Button
+    <ImageView
         android:id="@+id/addNewPaletteButton"
+        android:src="@drawable/plus"
+        android:scaleType="fitCenter"
+        android:focusable="true"
+        android:clickable="true"
         android:layout_margin="30dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"

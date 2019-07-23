@@ -6,7 +6,7 @@
 
     <LinearLayout
         android:id="@+id/bottom_wrapper"
-        android:background="#FF3300"
+        android:background="@color/colorYellow"
         android:orientation="horizontal"
         android:layout_width="80dp"
         android:layout_height="match_parent">
@@ -24,7 +24,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:background="#0000CC"
+        android:background="@color/colorPrimaryDark"
         android:padding="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> savedPalettes;
     private TextView totalPalettes;
     private SwipeLayout swipeLayout;
-    private Button addNewPaletteButton;
+    private ImageView addNewPaletteButton;
 
     private final static String TAG = MainActivity.class.getSimpleName();
 
