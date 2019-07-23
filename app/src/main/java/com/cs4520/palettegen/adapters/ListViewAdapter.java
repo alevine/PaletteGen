@@ -1,6 +1,7 @@
 package com.cs4520.palettegen.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +15,19 @@ import com.daimajia.swipe.SwipeLayout;
 
 import java.util.List;
 
+/**
+ * Attribution: Obtained from a guide to make swipe-able list views on www.devexchanges.info .
+ *
+ * http://www.devexchanges.info/2015/09/making-swipeable-listview-in-android.html
+ *
+ * Modified slightly for our purposes.
+ */
+// Adapter class based on swipe view guide from: http://www.devexchanges.info/2015/09/making-swipeable-listview-in-android.html
 public class ListViewAdapter extends ArrayAdapter<String> {
 
     private class ViewHolder {
         private TextView name;
+        private View[] colors;
         private View deleteButton;
         private View editButton;
         private SwipeLayout swipeLayout;
@@ -27,6 +37,10 @@ public class ListViewAdapter extends ArrayAdapter<String> {
             deleteButton = v.findViewById(R.id.delete);
             editButton = v.findViewById(R.id.edit_query);
             name = v.findViewById(R.id.name);
+            colors = new View[5];
+            for (int i = 0; i < 5; i++) {
+                colors[i] = v.findViewById(v.getResources().getIdentifier("color" + (i+1), "View", mainActivity.getPackageName()));
+            }
 
             swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown);
         }

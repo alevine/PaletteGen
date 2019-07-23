@@ -59,12 +59,54 @@
         <TextView
             android:id="@+id/name"
             android:gravity="center_vertical"
-            android:layout_width="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:layout_weight="4"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:minHeight="?android:listPreferredItemHeightSmall"
             android:paddingStart="?listPreferredItemPaddingLeft"
             android:paddingEnd="?listPreferredItemPaddingRight"
             android:textAppearance="?android:attr/textAppearanceListItemSmall"/>
+
+        <View
+            android:id="@+id/color1"
+            android:background="@color/colorBlue"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp" />
+
+        <View
+            android:id="@+id/color2"
+            android:background="@color/colorYellow"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp" />
+
+        <View
+            android:id="@+id/color3"
+            android:background="@color/colorRed"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp" />
+
+        <View
+            android:id="@+id/color4"
+            android:background="@color/colorGreen"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp" />
+
+        <View
+            android:id="@+id/color5"
+            android:background="@color/grey"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp" />
 
     </LinearLayout>
     <!-- Surface View End -->
