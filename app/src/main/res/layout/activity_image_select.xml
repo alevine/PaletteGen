@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_width="0px"
+        android:layout_height="0px" />
+
+    <Button
+        android:id="@+id/cameraButton"
+        android:drawableTop="@drawable/ic_camera"
+        android:paddingVertical="100dp"
+        android:text="@string/cameraPrompt"
+        android:layout_weight="0.45"
+        android:layout_height="0dp"
+        android:layout_width="match_parent" />
+
+    <Button
+        android:id="@+id/uploadButton"
+        android:drawableTop="@drawable/ic_upload"
+        android:paddingVertical="100dp"
+        android:text="@string/uploadPrompt"
+        android:layout_weight="0.45"
+        android:layout_height="0dp"
+        android:layout_width="match_parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/urlUploadButton"
+            android:layout_weight="0.1"
+            android:src="@drawable/ic_upload_external"
+            android:background="@android:color/transparent"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/urlImageDesc" />
+
+        <EditText
+            android:id="@+id/urlUpload"
+            android:focusedByDefault="false"
+            android:layout_weight="0.9"
+            android:hint="@string/uploadHint"
+            android:textSize="25sp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:autofillHints="Image upload from URL"
+            android:inputType="textUri"
+            android:layout_width="0dp"
+            android:nextFocusUp="@id/urlUpload"
+            android:nextFocusLeft="@id/urlUpload" />
+    </LinearLayout>
+</LinearLayout>
