@@ -13,7 +13,7 @@
 
         <TextView
             android:id="@+id/paletteViewTitle"
-            android:text="paletteNameGoesHere"
+            android:text="Palette Name"
             android:textColor="@android:color/white"
             android:textStyle="bold"
             android:textSize="20sp"
@@ -35,103 +35,46 @@
 
     </RelativeLayout>
 
-    <ScrollView
+    <View
+        android:id="@+id/palette1"
+        android:background="@color/colorRed"
+        android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp" />
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <View
+        android:layout_weight="1"
+        android:background="@color/colorYellowDark"
+        android:id="@+id/palette2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
 
-            <ImageView
-                android:id="@+id/exampleImg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="fitCenter"
-                android:adjustViewBounds="true"
-                android:src="@drawable/logo"
-                android:background="#000000"
-                android:padding="10dp" />
+    <View
+        android:layout_weight="1"
+        android:background="@color/colorYellow"
+        android:id="@+id/palette3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
 
-            <TextView
-                android:id="@+id/colorDisplay1"
-                android:text="TEMP"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:textAlignment="center"
-                android:background="@color/colorRed"
-                android:gravity="center_vertical"
-                android:layout_width="match_parent"
-                android:layout_height="80dp" />
+    <View
+        android:layout_weight="1"
+        android:background="@color/colorGreen"
+        android:id="@+id/palette4"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
 
-            <TextView
-                android:id="@+id/colorDisplay2"
-                android:text="TEMP"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:textAlignment="center"
-                android:background="@color/colorBlue"
-                android:gravity="center_vertical"
-                android:layout_width="match_parent"
-                android:layout_height="80dp" />
+    <View
+        android:layout_weight="1"
+        android:background="@color/colorBlue"
+        android:id="@+id/palette5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
 
-            <TextView
-                android:id="@+id/colorDisplay3"
-                android:text="TEMP"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:textAlignment="center"
-                android:background="@color/colorYellow"
-                android:gravity="center_vertical"
-                android:layout_width="match_parent"
-                android:layout_height="80dp" />
-
-            <TextView
-                android:id="@+id/colorDisplay4"
-                android:text="TEMP"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:textAlignment="center"
-                android:background="@color/colorGreen"
-                android:gravity="center_vertical"
-                android:layout_width="match_parent"
-                android:layout_height="80dp" />
-
-            <TextView
-                android:id="@+id/colorDisplay5"
-                android:text="TEMP"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:textAlignment="center"
-                android:background="@color/colorRedDark"
-                android:gravity="center_vertical"
-                android:layout_width="match_parent"
-                android:layout_height="80dp" />
-
-            <TextView
-                android:id="@+id/colorDisplay6"
-                android:text="TEMP"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:textAlignment="center"
-                android:background="@color/colorYellowDark"
-                android:gravity="center_vertical"
-                android:layout_width="match_parent"
-                android:layout_height="80dp" />
-
-        </LinearLayout>
-
-    </ScrollView>
-
-
-
-
+    <View
+        android:layout_weight="1"
+        android:background="@color/colorPurple"
+        android:id="@+id/palette6"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
 
 </LinearLayout>
