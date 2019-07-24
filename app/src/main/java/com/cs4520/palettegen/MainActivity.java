@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> savedPalettes;
     private TextView totalPalettes;
     private SwipeLayout swipeLayout;
-    private ImageView addNewPaletteButton;
 
     private final static String TAG = MainActivity.class.getSimpleName();
 
@@ -37,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.savedPalettesListView);
 
         savedPalettes = new ArrayList<>();
+
         // TODO get the data from file.
         for (int i = 0; i < 20; i++) {
             savedPalettes.add("Palette " + i);
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         setListViewHeader();
         setListViewAdapter();
 
-        addNewPaletteButton = findViewById(R.id.addNewPaletteButton);
+        ImageView addNewPaletteButton = findViewById(R.id.addNewPaletteButton);
         addNewPaletteButton.setOnClickListener(addNewPaletteListener());
     }
 
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ListViewAdapter(this, R.layout.item_listview, savedPalettes);
         listView.setAdapter(adapter);
 
-        totalPalettes.setText("(" + savedPalettes.size() + ")");
+        totalPalettes.setText(String.format("(%s)", savedPalettes.size()));
     }
 
     private View.OnClickListener addNewPaletteListener() {
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateAdapter() {
         adapter.notifyDataSetChanged(); // update adapter
-        totalPalettes.setText("(" + savedPalettes.size() + ")");
+        totalPalettes.setText(String.format("(%s)", savedPalettes.size()));
     }
 
 }

@@ -32,7 +32,7 @@ public class ListViewAdapter extends ArrayAdapter<String> {
         private View editButton;
         private SwipeLayout swipeLayout;
 
-        public ViewHolder(View v) {
+        ViewHolder(View v) {
             swipeLayout = v.findViewById(R.id.swipe_layout);
             deleteButton = v.findViewById(R.id.delete);
             editButton = v.findViewById(R.id.edit_query);
