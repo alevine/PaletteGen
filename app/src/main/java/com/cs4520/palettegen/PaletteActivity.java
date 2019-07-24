@@ -3,6 +3,7 @@ package com.cs4520.palettegen;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import java.util.Objects;
 
 public class PaletteActivity extends AppCompatActivity {
 
+    ImageView settingsButton;
     ImageView givenImage;
 
     @Override
@@ -19,6 +21,8 @@ public class PaletteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_palette);
 
+        settingsButton = findViewById(R.id.paletteViewSettingsButton);
+        settingsButton.setOnClickListener(settingsButtonListener());
         givenImage = findViewById(R.id.exampleImg);
 
         // Get intent and given path from the camera intent
@@ -31,5 +35,14 @@ public class PaletteActivity extends AppCompatActivity {
         Uri contentUri = Uri.fromFile(f);
 
         givenImage.setImageURI(contentUri);
+    }
+
+    private View.OnClickListener settingsButtonListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: implement on click method to view/change settings
+            }
+        };
     }
 }

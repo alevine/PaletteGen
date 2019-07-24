@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.cs4520.palettegen">
-
     <!-- Uses camera feature to take pictures for palettes -->
     <uses-feature
         android:name="android.hardware.camera"
@@ -30,26 +29,29 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".ImageSelectActivity" android:screenOrientation="portrait" />
-        <activity android:name=".PaletteActivity" android:screenOrientation="portrait" />
-
+        <activity
+            android:name=".ImageSelectActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PaletteActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SplashActivity"
-            android:theme="@style/SplashTheme"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".MainActivity" android:screenOrientation="portrait">
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>
