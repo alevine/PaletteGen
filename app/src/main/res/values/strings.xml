@@ -8,4 +8,5 @@
     <string name="uploadHint">Or upload from URL</string>
     <string name="urlImageDesc">Upload from URL Image</string>
     <string name="homePageTitle">Saved Palettes</string>
+    <string name="addPaletteDesc">add new palette button</string>
 </resources>

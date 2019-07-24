@@ -13,4 +13,6 @@
     <color name="colorYellowDark">#A85810</color>
     <color name="colorGreen">#508058</color>
     <color name="colorGreenDark">#407048</color>
+    <color name="colorPurple">#9400D3</color>
+    <color name="colorPurpleDark">#4B0082</color>
 </resources>

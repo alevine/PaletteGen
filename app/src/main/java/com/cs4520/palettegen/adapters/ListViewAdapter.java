@@ -37,9 +37,13 @@ public class ListViewAdapter extends ArrayAdapter<String> {
             deleteButton = v.findViewById(R.id.delete);
             editButton = v.findViewById(R.id.edit_query);
             name = v.findViewById(R.id.name);
-            colors = new View[5];
-            for (int i = 0; i < 5; i++) {
-                colors[i] = v.findViewById(v.getResources().getIdentifier("color" + (i+1), "View", mainActivity.getPackageName()));
+            colors = new View[6];
+            for (int i = 0; i < 6; i++) {
+                colors[i] = v.findViewById(
+                        v.getResources().getIdentifier(
+                                "color" + (i+1), "View", mainActivity.getPackageName()
+                        )
+                );
             }
 
             swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown);

@@ -54,12 +54,14 @@
     <LinearLayout
         android:background="#ffffff"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/name"
             android:gravity="center_vertical"
-            android:layout_marginVertical="5dp"
+            android:layout_marginVertical="10dp"
             android:layout_weight="4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -70,7 +72,7 @@
 
         <View
             android:id="@+id/color1"
-            android:background="@color/colorBlue"
+            android:background="@color/colorRed"
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -78,7 +80,7 @@
 
         <View
             android:id="@+id/color2"
-            android:background="@color/colorYellow"
+            android:background="@color/colorYellowDark"
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -86,7 +88,7 @@
 
         <View
             android:id="@+id/color3"
-            android:background="@color/colorRed"
+            android:background="@color/colorYellow"
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -102,7 +104,15 @@
 
         <View
             android:id="@+id/color5"
-            android:background="@color/grey"
+            android:background="@color/colorBlue"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp" />
+
+        <View
+            android:id="@+id/color6"
+            android:background="@color/colorPurple"
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:layout_width="0dp"
