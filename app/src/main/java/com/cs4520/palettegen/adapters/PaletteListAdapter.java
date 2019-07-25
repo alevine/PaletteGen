@@ -67,7 +67,7 @@ public class PaletteListAdapter extends BaseSwipeAdapter {
                 paletteDetailsIntent.putExtra("paletteId", paletteId);
                 context.startActivity(paletteDetailsIntent);
 
-                Log.e("ListViewAdapter - edit", "Edit saved palette not yet implemented.");
+                //Log.e("ListViewAdapter - edit", "Edit saved palette not yet implemented.");
             }
         };
     }
