@@ -1,9 +1,11 @@
 package com.cs4520.palettegen;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,13 +18,16 @@ import com.cs4520.palettegen.db.PaletteViewModel;
 public class PaletteActivity extends AppCompatActivity {
 
     ImageView settingsButton;
+    TextView paletteName;
     PaletteViewModel paletteViewModel;
-    View[] colors;
+    TextView[] colors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_palette);
+
+        paletteName = findViewById(R.id.paletteViewTitle);
 
         paletteViewModel = ViewModelProviders.of(PaletteActivity.this).get(PaletteViewModel.class);
 
@@ -34,7 +39,7 @@ public class PaletteActivity extends AppCompatActivity {
 
         Bundle extras = intent.getExtras();
 
-        colors = new View[6];
+        colors = new TextView[6];
 
         colors[0] = findViewById(R.id.palette1);
         colors[1] = findViewById(R.id.palette2);
@@ -52,10 +57,13 @@ public class PaletteActivity extends AppCompatActivity {
                 paletteViewModel.getSearchResults().observe(this, new Observer<Palette>() {
                     @Override
                     public void onChanged(@Nullable final Palette palette) {
+                        paletteName.setText(palette.getPaletteName());
+
                         String[] colorList = palette.getColorString().split(",");
 
                         for (int i = 0; i < 6; i++) {
                             colors[i].setBackgroundColor(Integer.parseInt(colorList[i]));
+                            colors[i].setText(Integer.toHexString(Integer.parseInt(colorList[i])));
                         }
                     }
                 });

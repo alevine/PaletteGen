@@ -16,11 +16,14 @@ public class PaletteViewModel extends AndroidViewModel {
 
     private MutableLiveData<Palette> searchResults;
 
+    private MutableLiveData<Integer> totalCount;
+
     public PaletteViewModel (Application application) {
         super(application);
         this.mRepository = new PaletteRepository(application);
         mAllPalettes = this.mRepository.getAllPalettes();
         searchResults = this.mRepository.getSearchResult();
+        totalCount = this.mRepository.getTotalCount();
     }
 
     public MutableLiveData<Palette> getSearchResults() {
@@ -29,7 +32,11 @@ public class PaletteViewModel extends AndroidViewModel {
 
     public LiveData<List<Palette>> getAllPalettes() { return this.mAllPalettes; }
 
+    public MutableLiveData<Integer> getTotalCount() { return this.totalCount; }
+
     public void getPalette(int id) { this.mRepository.getPalette(id); }
 
     public void insert(Palette palette) { this.mRepository.insert(palette); }
+
+    public void count() { this.mRepository.count(); }
 }

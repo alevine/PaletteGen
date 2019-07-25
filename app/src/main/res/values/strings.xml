@@ -11,4 +11,5 @@
     <string name="addPaletteDesc">add new palette button</string>
     <string name="settingsButtonDesc">Settings button</string>
     <string name="savedPalettesText">Saved Palettes</string>
+    <string name="imageSelectHelp">Please select an image to create its color palette.</string>
 </resources>

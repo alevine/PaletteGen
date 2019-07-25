@@ -13,6 +13,7 @@ class PaletteRepository {
     private PaletteDao paletteDao;
     private LiveData<List<Palette>> allPalettes;
     private MutableLiveData<Palette> searchResults = new MutableLiveData<>();
+    private MutableLiveData<Integer> totalCount = new MutableLiveData<>();
 
     PaletteRepository(Application application) {
         PaletteRoomDatabase db = PaletteRoomDatabase.getDatabase(application);
@@ -26,10 +27,18 @@ class PaletteRepository {
 
     MutableLiveData<Palette> getSearchResult() { return searchResults; }
 
+    MutableLiveData<Integer> getTotalCount() { return totalCount; }
+
     void getPalette(int id) {
         QueryAsyncTask task = new QueryAsyncTask(paletteDao);
         task.delegate = this;
         task.execute(id);
+    }
+
+    void count() {
+        CountAsyncTask task = new CountAsyncTask(paletteDao);
+        task.delegate = this;
+        task.execute();
     }
 
     void insert(Palette palette) {
@@ -38,6 +47,10 @@ class PaletteRepository {
 
     private void asyncFinished(Palette results) {
         searchResults.setValue(results);
+    }
+
+    private void asyncFinished(Integer result) {
+        totalCount.setValue(result);
     }
 
     private static class insertAsyncTask extends AsyncTask<Palette, Void, Void> {
@@ -52,6 +65,26 @@ class PaletteRepository {
         protected Void doInBackground(final Palette... params) {
             mAsyncTaskDao.insert(params[0]);
             return null;
+        }
+    }
+
+    private static class CountAsyncTask extends AsyncTask<Void, Void, Integer> {
+
+        private PaletteDao asyncTaskDao;
+        private PaletteRepository delegate = null;
+
+        CountAsyncTask(PaletteDao dao) {
+            asyncTaskDao = dao;
+        }
+
+        @Override
+        protected Integer doInBackground(Void... voids) {
+            return asyncTaskDao.getPaletteCount();
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            delegate.asyncFinished(result);
         }
     }
 

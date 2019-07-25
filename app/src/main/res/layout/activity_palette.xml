@@ -7,13 +7,12 @@
     tools:context=".PaletteActivity">
 
     <RelativeLayout
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorBlue"
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
         <TextView
             android:id="@+id/paletteViewTitle"
-            android:text="Palette Name"
             android:textColor="@android:color/white"
             android:textStyle="bold"
             android:textSize="20sp"
@@ -36,42 +35,60 @@
 
     </RelativeLayout>
 
-    <View
+    <TextView
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textSize="30sp"
         android:id="@+id/palette1"
         android:background="@color/colorRed"
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="0dp" />
 
-    <View
+    <TextView
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textSize="30sp"
         android:layout_weight="1"
         android:background="@color/colorYellowDark"
         android:id="@+id/palette2"
         android:layout_width="match_parent"
         android:layout_height="0dp" />
 
-    <View
+    <TextView
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textSize="30sp"
         android:layout_weight="1"
         android:background="@color/colorYellow"
         android:id="@+id/palette3"
         android:layout_width="match_parent"
         android:layout_height="0dp" />
 
-    <View
+    <TextView
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textSize="30sp"
         android:layout_weight="1"
         android:background="@color/colorGreen"
         android:id="@+id/palette4"
         android:layout_width="match_parent"
         android:layout_height="0dp" />
 
-    <View
+    <TextView
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textSize="30sp"
         android:layout_weight="1"
         android:background="@color/colorBlue"
         android:id="@+id/palette5"
         android:layout_width="match_parent"
         android:layout_height="0dp" />
 
-    <View
+    <TextView
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textSize="30sp"
         android:layout_weight="1"
         android:background="@color/colorPurple"
         android:id="@+id/palette6"

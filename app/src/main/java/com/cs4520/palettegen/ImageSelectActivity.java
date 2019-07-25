@@ -19,10 +19,14 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
+import com.cs4520.palettegen.db.PaletteViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -42,6 +46,7 @@ public class ImageSelectActivity extends AppCompatActivity {
 
     private EditText uploadFromURLEditText;
     private String currentPhotoPath;
+    private PaletteViewModel paletteViewModel;
 
     private static final int REQUEST_READ_PERMISSIONS = 0;
 
@@ -55,6 +60,8 @@ public class ImageSelectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_select);
+
+        paletteViewModel = ViewModelProviders.of(ImageSelectActivity.this).get(PaletteViewModel.class);
 
         Button cameraButton = findViewById(R.id.cameraButton);
         Button uploadButton = findViewById(R.id.uploadButton);
@@ -191,42 +198,45 @@ public class ImageSelectActivity extends AppCompatActivity {
      * When they are completed we move to the next Activity.
      */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        PaletteGenerator generator = new PaletteGenerator();
-        Intent replyIntent = new Intent();
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        final PaletteGenerator generator = new PaletteGenerator();
+        final Intent replyIntent = new Intent();
 
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            replyIntent.putExtra("colorString",
-                    generator.generatePaletteColorsFromPath(currentPhotoPath));
-            replyIntent.putExtra("paletteName", "Example");
-            setResult(RESULT_OK, replyIntent);
-        } else if (requestCode == REQUEST_PICK_IMAGE && resultCode == RESULT_OK) {
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+        paletteViewModel.count();
 
-            assert selectedImage != null;
-            Cursor cursor = getContentResolver().query(selectedImage,
-                    filePathColumn, null, null, null);
+        paletteViewModel.getTotalCount().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable final Integer count) {
+                if ((requestCode == REQUEST_IMAGE_CAPTURE || requestCode == REQUEST_URL_IMAGE)
+                        && resultCode == RESULT_OK) {
+                    replyIntent.putExtra("colorString",
+                            generator.generatePaletteColorsFromPath(currentPhotoPath));
+                    replyIntent.putExtra("paletteName", "Palette #" + count);
+                    setResult(RESULT_OK, replyIntent);
+                } else if (requestCode == REQUEST_PICK_IMAGE && resultCode == RESULT_OK) {
+                    Uri selectedImage = data.getData();
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-            assert cursor != null;
-            cursor.moveToFirst();
+                    assert selectedImage != null;
+                    Cursor cursor = getContentResolver().query(selectedImage,
+                            filePathColumn, null, null, null);
 
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
+                    assert cursor != null;
+                    cursor.moveToFirst();
 
-            replyIntent.putExtra("colorString",
-                    generator.generatePaletteColorsFromPath(picturePath));
-            replyIntent.putExtra("paletteName", "Example");
-            setResult(RESULT_OK, replyIntent);
-        } else if (requestCode == REQUEST_URL_IMAGE && resultCode == RESULT_OK) {
-            replyIntent.putExtra("colorString",
-                    generator.generatePaletteColorsFromPath(currentPhotoPath));
-            replyIntent.putExtra("paletteName", "Example");
-            setResult(RESULT_OK, replyIntent);
-        }
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    String picturePath = cursor.getString(columnIndex);
+                    cursor.close();
 
-        finish();
+                    replyIntent.putExtra("colorString",
+                            generator.generatePaletteColorsFromPath(picturePath));
+                    replyIntent.putExtra("paletteName", "Palette #" + (count + 1));
+                    setResult(RESULT_OK, replyIntent);
+                }
+
+                finish();
+            }
+        });
     }
 
     /**
