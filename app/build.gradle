@@ -28,9 +28,22 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    // Native Palette Library
     implementation 'androidx.palette:palette:1.0.0'
+
+    // SwipeLayout components
     implementation 'com.daimajia.swipelayout:library:1.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation "com.daimajia.swipelayout:library:1.2.0@aar"
+
+    // Room components
+    def room_version = "2.1.0" // 2.1.0 for latest stable version
+
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+
+    // LifeCycle components
+    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0"
+    annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.0.0"
 }

@@ -1,27 +1,30 @@
 package com.cs4520.palettegen;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.palette.graphics.Palette;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
-import java.io.File;
+import com.cs4520.palettegen.db.Palette;
+import com.cs4520.palettegen.db.PaletteViewModel;
 
 public class PaletteActivity extends AppCompatActivity {
 
     ImageView settingsButton;
+    PaletteViewModel paletteViewModel;
     View[] colors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_palette);
+
+        paletteViewModel = ViewModelProviders.of(PaletteActivity.this).get(PaletteViewModel.class);
 
         settingsButton = findViewById(R.id.paletteViewSettingsButton);
         settingsButton.setOnClickListener(settingsButtonListener());
@@ -41,30 +44,24 @@ public class PaletteActivity extends AppCompatActivity {
         colors[5] = findViewById(R.id.palette6);
 
         if (extras != null) {
-            if (extras.containsKey("currentPhotoLocation")) {
-                String currentPhotoPath = extras.getString("currentPhotoLocation");
+            if (extras.containsKey("paletteId")) {
+                int paletteId = extras.getInt("paletteId");
 
-                assert currentPhotoPath != null;
-                Log.d("path", currentPhotoPath);
+                paletteViewModel.getPalette(paletteId);
 
-                // Use preferred ARGB_8888 decoding for 4 byte pixels
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                paletteViewModel.getSearchResults().observe(this, new Observer<Palette>() {
+                    @Override
+                    public void onChanged(@Nullable final Palette palette) {
+                        String[] colorList = palette.getColorString().split(",");
 
-                // Generate bitmap from the file path
-                File f = new File(currentPhotoPath);
-                Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(), options);
-
-                Palette p = createPaletteSync(bitmap);
-                getColorsFromPalette(p);
+                        for (int i = 0; i < 6; i++) {
+                            colors[i].setBackgroundColor(Integer.parseInt(colorList[i]));
+                        }
+                    }
+                });
             }
         }
 
-    }
-
-    // Generate palette synchronously and return it
-    public Palette createPaletteSync(Bitmap bitmap) {
-        return Palette.from(bitmap).generate();
     }
 
     private View.OnClickListener settingsButtonListener() {
@@ -74,21 +71,6 @@ public class PaletteActivity extends AppCompatActivity {
                 // TODO: implement on click method to view/change settings
             }
         };
-    }
-
-    // Get the colors from a given palette and assign them to a simple view
-    public void getColorsFromPalette(Palette p) {
-        int i = 0;
-
-        for (Palette.Swatch s : p.getSwatches()) {
-            if (i == 6) {
-                break;
-            }
-
-            colors[i].setBackgroundColor(s.getRgb());
-
-            i++;
-        }
     }
 
 }

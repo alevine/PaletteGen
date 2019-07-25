@@ -36,18 +36,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import utils.PaletteGenerator;
+
 public class ImageSelectActivity extends AppCompatActivity {
 
     private EditText uploadFromURLEditText;
     private String currentPhotoPath;
+
+    private static final int REQUEST_READ_PERMISSIONS = 0;
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private static final int REQUEST_PICK_IMAGE = 2;
 
     private static final int REQUEST_URL_IMAGE = 3;
-
-    private static final int REQUEST_READ_PERMISSIONS = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,14 +192,15 @@ public class ImageSelectActivity extends AppCompatActivity {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        PaletteGenerator generator = new PaletteGenerator();
+        Intent replyIntent = new Intent();
+
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Intent moveToPaletteIntent = new Intent(ImageSelectActivity.this, PaletteActivity.class);
-
-            moveToPaletteIntent.putExtra("currentPhotoLocation", currentPhotoPath);
-            startActivity(moveToPaletteIntent);
+            replyIntent.putExtra("colorString",
+                    generator.generatePaletteColorsFromPath(currentPhotoPath));
+            replyIntent.putExtra("paletteName", "Example");
+            setResult(RESULT_OK, replyIntent);
         } else if (requestCode == REQUEST_PICK_IMAGE && resultCode == RESULT_OK) {
-            Intent moveToPaletteIntent = new Intent(ImageSelectActivity.this, PaletteActivity.class);
-
             Uri selectedImage = data.getData();
             String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
@@ -212,14 +215,18 @@ public class ImageSelectActivity extends AppCompatActivity {
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
 
-            moveToPaletteIntent.putExtra("currentPhotoLocation", picturePath);
-            startActivity(moveToPaletteIntent);
+            replyIntent.putExtra("colorString",
+                    generator.generatePaletteColorsFromPath(picturePath));
+            replyIntent.putExtra("paletteName", "Example");
+            setResult(RESULT_OK, replyIntent);
         } else if (requestCode == REQUEST_URL_IMAGE && resultCode == RESULT_OK) {
-            Intent moveToPaletteIntent = new Intent(ImageSelectActivity.this, PaletteActivity.class);
-
-            moveToPaletteIntent.putExtra("currentPhotoLocation", currentPhotoPath);
-            startActivity(moveToPaletteIntent);
+            replyIntent.putExtra("colorString",
+                    generator.generatePaletteColorsFromPath(currentPhotoPath));
+            replyIntent.putExtra("paletteName", "Example");
+            setResult(RESULT_OK, replyIntent);
         }
+
+        finish();
     }
 
     /**

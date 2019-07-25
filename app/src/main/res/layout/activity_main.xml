@@ -5,10 +5,20 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <ListView
-        android:id="@+id/savedPalettesListView"
+    <TextView
+        android:id="@+id/headerTextView"
+        android:textSize="30sp"
+        android:layout_marginBottom="20dp"
+        android:text="@string/savedPalettesText"
+        android:textAlignment="center"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
+
+    <ListView
+        android:layout_below="@id/headerTextView"
+        android:id="@+id/savedPalettesList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <ImageView
         android:id="@+id/addNewPaletteButton"

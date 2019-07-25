@@ -2,111 +2,78 @@ package com.cs4520.palettegen;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
-import com.cs4520.palettegen.adapters.ListViewAdapter;
+import com.cs4520.palettegen.adapters.PaletteListAdapter;
+import com.cs4520.palettegen.db.Palette;
+import com.cs4520.palettegen.db.PaletteViewModel;
 import com.daimajia.swipe.SwipeLayout;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ListView listView;
-    private ArrayAdapter<String> adapter;
-    private ArrayList<String> savedPalettes;
-    private TextView totalPalettes;
-    private SwipeLayout swipeLayout;
+    private ListView paletteListView;
+    private PaletteListAdapter adapter;
 
-    private final static String TAG = MainActivity.class.getSimpleName();
+    private PaletteViewModel mPaletteViewModel;
+
+    public final static int NEW_PALETTE_ACTIVITY_REQUEST = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        listView = findViewById(R.id.savedPalettesListView);
+        paletteListView = findViewById(R.id.savedPalettesList);
 
-        savedPalettes = new ArrayList<>();
+        // Get the Palette ViewModel and add an observer for the live data palettes
+        mPaletteViewModel = ViewModelProviders.of(MainActivity.this).get(PaletteViewModel.class);
 
-        // TODO get the data from file.
-        for (int i = 0; i < 20; i++) {
-            savedPalettes.add("Palette " + i);
-        }
+        mPaletteViewModel.getAllPalettes().observe(MainActivity.this, new Observer<List<Palette>>() {
+            @Override
+            public void onChanged(@Nullable final List<Palette> palettes) {
+                // Update the cached copy of the words in the adapter.
+                adapter.setPalettes(palettes);
+            }
+        });
 
-        setListViewHeader();
+        // Set header and custom adapter for the ListView
         setListViewAdapter();
 
+        // Create onClickListener for the floating action button
         ImageView addNewPaletteButton = findViewById(R.id.addNewPaletteButton);
         addNewPaletteButton.setOnClickListener(addNewPaletteListener());
     }
 
-    private void setListViewHeader() {
-        LayoutInflater inflater = getLayoutInflater();
-        View header = inflater.inflate(R.layout.header_listview, listView, false);
-        totalPalettes = header.findViewById(R.id.total);
-        swipeLayout = header.findViewById(R.id.swipe_layout);
-        setSwipeViewFeatures();
-        listView.addHeaderView(header);
-    }
+    // On activity result of the generate Palette activity, insert it into the database
+    // and update the resulting UI
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-    private void setSwipeViewFeatures() {
-        swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
-
-        swipeLayout.addDrag(SwipeLayout.DragEdge.Left, findViewById(R.id.bottom_wrapper));
-
-        swipeLayout.addSwipeListener(new SwipeLayout.SwipeListener() {
-            @Override
-            public void onStartOpen(SwipeLayout layout) {
-                Log.i(TAG, "onStartOpen");
-            }
-
-            @Override
-            public void onOpen(SwipeLayout layout) {
-                Log.i(TAG, "onOpen");
-
-            }
-
-            @Override
-            public void onStartClose(SwipeLayout layout) {
-                Log.i(TAG, "onStartClose");
-
-            }
-
-            @Override
-            public void onClose(SwipeLayout layout) {
-                Log.i(TAG, "onClose");
-
-            }
-
-            @Override
-            public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
-                Log.i(TAG, "onUpdate - swiping");
-
-            }
-
-            @Override
-            public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
-                Log.i(TAG, "onHandRelease");
-                if(swipeLayout != null) {
-                    swipeLayout.close();
-                }
-            }
-        });
+        // We have requested a new palette and it is completed, add it to the database
+        if (requestCode == NEW_PALETTE_ACTIVITY_REQUEST && resultCode == RESULT_OK) {
+            String colorString = data.getStringExtra("colorString");
+            String paletteName = data.getStringExtra("paletteName");
+            assert paletteName != null;
+            assert colorString != null;
+            Palette palette = new Palette(colorString, paletteName);
+            mPaletteViewModel.insert(palette);
+        }
     }
 
     private void setListViewAdapter() {
-        adapter = new ListViewAdapter(this, R.layout.item_listview, savedPalettes);
-        listView.setAdapter(adapter);
-
-        totalPalettes.setText(String.format("(%s)", savedPalettes.size()));
+        adapter = new PaletteListAdapter(MainActivity.this);
+        paletteListView.setAdapter(adapter);
     }
 
     private View.OnClickListener addNewPaletteListener() {
@@ -114,14 +81,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent moveToImageSelectIntent = new Intent(MainActivity.this, ImageSelectActivity.class);
-                startActivity(moveToImageSelectIntent);
+                startActivityForResult(moveToImageSelectIntent, NEW_PALETTE_ACTIVITY_REQUEST);
             }
         };
-    }
-
-    public void updateAdapter() {
-        adapter.notifyDataSetChanged(); // update adapter
-        totalPalettes.setText(String.format("(%s)", savedPalettes.size()));
     }
 
 }
