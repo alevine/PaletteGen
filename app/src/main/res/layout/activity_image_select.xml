@@ -7,7 +7,7 @@
     android:gravity="center"
     android:id="@+id/imageSelectLayout"
     tools:context=".ImageSelectActivity"
-    android:background="@color/colorPrimaryDark">
+    android:background="@color/grey">
 
     <TextView
         android:layout_marginBottom="30dp"
@@ -51,15 +51,14 @@
         android:textSize="15sp" />
 
     <LinearLayout
-        android:paddingHorizontal="50dp"
-        android:layout_gravity="center_vertical"
-        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <EditText
             android:id="@+id/urlUpload"
-            android:layout_width="230dp"
+            android:layout_width="wrap_content"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
             android:layout_height="wrap_content"
@@ -69,7 +68,6 @@
             android:inputType="textUri"
             android:nextFocusLeft="@id/urlUpload"
             android:nextFocusUp="@id/urlUpload"
-            android:layout_marginLeft="25dp"
             android:textSize="20sp" />
 
         <ImageButton

@@ -1,29 +1,25 @@
 package com.cs4520.palettegen.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.cs4520.palettegen.PaletteActivity;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.cs4520.palettegen.R;
 import com.cs4520.palettegen.db.Palette;
-import com.daimajia.swipe.SwipeLayout;
-import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 
 import java.util.List;
 
+
 /**
- * Attribution: Obtained from a guide to make swipe-able list views on www.devexchanges.info .
- *
- * http://www.devexchanges.info/2015/09/making-swipeable-listview-in-android.html
- *
- * Modified slightly for our purposes.
+ * Adapter for the Recycler View. Follows Androids basic tutorial.
  */
-public class PaletteListAdapter extends BaseSwipeAdapter {
+public class PaletteListAdapter extends RecyclerView.Adapter {
 
     private LayoutInflater mInflater;
     private Context context;
@@ -31,10 +27,42 @@ public class PaletteListAdapter extends BaseSwipeAdapter {
 
     public PaletteListAdapter(Context context) {
         this.context = context;
-        this.mInflater = LayoutInflater.from(context);
+        mInflater = LayoutInflater.from(context);
     }
 
-    @Override public int getCount() {
+    @NonNull
+    @Override
+    public PaletteListAdapter.PaletteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new PaletteViewHolder(mInflater.inflate(R.layout.item_listview, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (mPalettes != null) {
+            Log.d("ADAPTER", "mPalettes != null");
+            Log.d("ADAPTER", mPalettes.toString());
+
+            Palette current = mPalettes.get(position);
+
+            assert current != null;
+            ((PaletteViewHolder) holder).name.setText(current.getPaletteName());
+
+            // Parse colorstring and set colors
+            for (int i = 0; i < 6; i++) {
+                int color = Integer.parseInt(current.getColorString().split(",")[i]);
+                ((PaletteViewHolder) holder).colors[i].setBackgroundColor(color);
+            }
+
+            // Finally set tag of the whole layout for future reference
+            ((PaletteViewHolder) holder).name.setTag(current.getId());
+        } else {
+            // Do something here when no palettes?
+            Log.d("ADAPTER", "mPalettes == null");
+        }
+    }
+
+    @Override
+    public int getItemCount() {
         if (mPalettes != null) {
             return mPalettes.size();
         } else {
@@ -42,44 +70,8 @@ public class PaletteListAdapter extends BaseSwipeAdapter {
         }
     }
 
-    @Override
-    public Object getItem(int i) {
-        if (mPalettes != null) {
-            return mPalettes.get(i);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return mPalettes.get(i).getId();
-    }
-
-    private View.OnClickListener onEditListener() {
-        // TODO implement edit listener
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int paletteId = (int) view.getTag();
-
-                Intent paletteDetailsIntent = new Intent(context, PaletteActivity.class);
-                paletteDetailsIntent.putExtra("paletteId", paletteId);
-                context.startActivity(paletteDetailsIntent);
-
-                //Log.e("ListViewAdapter - edit", "Edit saved palette not yet implemented.");
-            }
-        };
-    }
-
-    private View.OnClickListener onDeleteListener() {
-        // TODO implement delete listener
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.e("ListViewAdapter - delete", "Delete saved palette not yet implemented");
-            }
-        };
+    Context getContext() {
+        return this.context;
     }
 
     public void setPalettes(List<Palette> mPalettes) {
@@ -87,55 +79,30 @@ public class PaletteListAdapter extends BaseSwipeAdapter {
         notifyDataSetChanged();
     }
 
-    public int getSwipeLayoutResourceId(int position) {
-        return R.id.swipe_layout;
-    }
+    private class PaletteViewHolder extends RecyclerView.ViewHolder {
 
-    // Here just inflate the view
-    @Override public View generateView(int position, ViewGroup parent) {
-        return mInflater.inflate(R.layout.item_listview, parent, false);
-    }
-
-    // Populate values and set on click here
-    @Override public void fillValues(int position, View convertView) {
-        SwipeLayout swipeLayout = convertView.findViewById(R.id.swipe_layout);
-        View deleteButton = convertView.findViewById(R.id.delete);
-        View editButton = convertView.findViewById(R.id.edit_query);
-        TextView name = convertView.findViewById(R.id.name);
-        View[] colors = new View[6];
-
-        // Assign the correct color views
-        colors[0] = convertView.findViewById(R.id.color1);
-        colors[1] = convertView.findViewById(R.id.color2);
-        colors[2] = convertView.findViewById(R.id.color3);
-        colors[3] = convertView.findViewById(R.id.color4);
-        colors[4] = convertView.findViewById(R.id.color5);
-        colors[5] = convertView.findViewById(R.id.color6);
-
-        // Set SwipeLayout show mode
-        swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown);
-
-        if (mPalettes != null) {
-            Palette current = mPalettes.get(position);
-
-            assert current != null;
-            name.setText(current.getPaletteName());
-
-            editButton.setOnClickListener(onEditListener());
-            deleteButton.setOnClickListener(onDeleteListener());
+        TextView name;
+        View[] colors;
 
 
-            // Parse colorstring and set colors
-            for (int i = 0; i < 6; i++) {
-                int color = Integer.parseInt(current.getColorString().split(",")[i]);
-                colors[i].setBackgroundColor(color);
-            }
+        PaletteViewHolder(@NonNull View itemView) {
+            super(itemView);
 
-            // Finally set tag of the whole layout for future reference
-            editButton.setTag(current.getId());
-        } else {
-            // Do something here when no palettes?
+            this.name = itemView.findViewById(R.id.name);
+            this.colors = new View[6];
+
+            // Assign the correct color views
+            this.colors[0] = itemView.findViewById(R.id.color1);
+            this.colors[1] = itemView.findViewById(R.id.color2);
+            this.colors[2] = itemView.findViewById(R.id.color3);
+            this.colors[3] = itemView.findViewById(R.id.color4);
+            this.colors[4] = itemView.findViewById(R.id.color5);
+            this.colors[5] = itemView.findViewById(R.id.color6);
         }
     }
 
+    void deleteItem(int position) {
+        Log.d("ADAPTER", "Delete Item Pushed");
+        notifyDataSetChanged();
+    }
 }

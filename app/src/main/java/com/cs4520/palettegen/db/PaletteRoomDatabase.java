@@ -1,15 +1,10 @@
 package com.cs4520.palettegen.db;
 
 import android.content.Context;
-import android.os.AsyncTask;
 
-import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.sqlite.db.SupportSQLiteDatabase;
-
-import com.cs4520.palettegen.R;
 
 /**
  * Obtained most code from the following official tutorial:
@@ -31,7 +26,7 @@ public abstract class PaletteRoomDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     // Create database here
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            PaletteRoomDatabase.class, "word_database")
+                            PaletteRoomDatabase.class, "palettes_database")
                             .build();
                 }
             }

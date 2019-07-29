@@ -234,6 +234,8 @@ public class ImageSelectActivity extends AppCompatActivity {
                     setResult(RESULT_OK, replyIntent);
                 }
 
+                // TODO: Else case for error handling
+
                 finish();
             }
         });
@@ -246,6 +248,7 @@ public class ImageSelectActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
 
+        // TODO: Don't make them click twice
         if (requestCode == REQUEST_READ_PERMISSIONS) {
             // Received permission result for read external permission.
             Log.i("ImageSelectActivity", "Received response for read permission request.");

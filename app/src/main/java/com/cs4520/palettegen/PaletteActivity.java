@@ -1,7 +1,6 @@
 package com.cs4520.palettegen;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -63,7 +62,7 @@ public class PaletteActivity extends AppCompatActivity {
 
                         for (int i = 0; i < 6; i++) {
                             colors[i].setBackgroundColor(Integer.parseInt(colorList[i]));
-                            colors[i].setText(Integer.toHexString(Integer.parseInt(colorList[i])));
+                            colors[i].setText("#" + Integer.toHexString(Integer.parseInt(colorList[i])).toUpperCase());
                         }
                     }
                 });

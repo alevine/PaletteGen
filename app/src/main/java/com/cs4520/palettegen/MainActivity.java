@@ -3,25 +3,26 @@ package com.cs4520.palettegen;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ListView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.cs4520.palettegen.adapters.PaletteListAdapter;
+import com.cs4520.palettegen.adapters.SwipeToDeleteCallback;
 import com.cs4520.palettegen.db.Palette;
 import com.cs4520.palettegen.db.PaletteViewModel;
-import com.daimajia.swipe.SwipeLayout;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ListView paletteListView;
+    private RecyclerView paletteRecyclerView;
     private PaletteListAdapter adapter;
 
     private PaletteViewModel mPaletteViewModel;
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        paletteListView = findViewById(R.id.savedPalettesList);
+        paletteRecyclerView = findViewById(R.id.savedPalettesList);
 
         // Get the Palette ViewModel and add an observer for the live data palettes
         mPaletteViewModel = ViewModelProviders.of(MainActivity.this).get(PaletteViewModel.class);
@@ -73,7 +74,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void setListViewAdapter() {
         adapter = new PaletteListAdapter(MainActivity.this);
-        paletteListView.setAdapter(adapter);
+        paletteRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        paletteRecyclerView.setAdapter(adapter);
+        ItemTouchHelper itemTouchHelper = new
+                ItemTouchHelper(new SwipeToDeleteCallback(adapter));
+        itemTouchHelper.attachToRecyclerView(paletteRecyclerView);
     }
 
     private View.OnClickListener addNewPaletteListener() {
