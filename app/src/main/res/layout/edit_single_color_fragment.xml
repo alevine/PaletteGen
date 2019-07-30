@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_margin="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/labelHue"
+        android:text="H"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <SeekBar
+        android:id="@+id/changeHueBar"
+        android:max="360"
+        android:layout_toEndOf="@id/labelHue"
+        android:layout_alignBottom="@id/labelHue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/labelSaturation"
+        android:text="S"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:layout_below="@id/labelHue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <SeekBar
+        android:id="@+id/changeSaturationBar"
+        android:max="255"
+        android:layout_below="@id/changeHueBar"
+        android:layout_toEndOf="@id/labelSaturation"
+        android:layout_alignBottom="@id/labelSaturation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/labelValue"
+        android:text="V"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:layout_below="@id/labelSaturation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <SeekBar
+        android:id="@+id/changeValueBar"
+        android:max="255"
+        android:layout_below="@+id/changeSaturationBar"
+        android:layout_toEndOf="@id/labelValue"
+        android:layout_alignBottom="@id/labelValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>

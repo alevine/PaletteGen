@@ -5,6 +5,8 @@
 
     <TextView
         android:id="@+id/colorDisplay"
+        android:clickable="true"
+        android:focusable="true"
         android:textAlignment="center"
         android:text="Hello?"
         android:gravity="center"
@@ -22,8 +24,6 @@
         android:layout_below="@id/colorDisplay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-
 
     </FrameLayout>
 

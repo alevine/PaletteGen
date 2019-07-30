@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -16,7 +17,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.cs4520.palettegen.adapters.ColorListAdapter;
 import com.cs4520.palettegen.db.PaletteContract;
 import com.cs4520.palettegen.db.PaletteDbHelper;
+import com.cs4520.palettegen.model.PaletteColorDisplayItem;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,11 +39,14 @@ public class PaletteActivity extends AppCompatActivity {
         settingsButton = findViewById(R.id.paletteViewSettingsButton);
         settingsButton.setOnClickListener(settingsButtonListener());
 
+        colorList = findViewById(R.id.colorList);
+        //colorList.setOnItemClickListener(colorListItemListener());
+
         // Get intent and given path from the camera intent
         Intent intent = getIntent();
 
         Bundle extras = intent.getExtras();
-        List<String> colors = null;
+        List<PaletteColorDisplayItem> colors = new ArrayList<>();
 
         if (extras != null) {
             if (extras.containsKey("paletteId")) {
@@ -75,23 +81,39 @@ public class PaletteActivity extends AppCompatActivity {
 
                 paletteName.setText(name);
 
-                colors = Arrays.asList(colorString.split(","));
+                int count = 0;
+                for(String s : colorString.split(",")) {
+                    colors.add(new PaletteColorDisplayItem(count, s));
+                    count++;
+                }
 
                 cursor.close();
             }
         }
 
-        if(colors == null) {
+        if(colors.size() == 0) {
             Log.e("Palette Not Found", "Palette Activity couldn't find corresponding palette.");
+        } else {
+            colorList.setAdapter(new ColorListAdapter(getSupportFragmentManager(), getApplicationContext(), colors));
         }
-        colorList = findViewById(R.id.colorList);
-        colorList.setAdapter(new ColorListAdapter(getApplicationContext(), colors));
 
     }
 
     private View.OnClickListener settingsButtonListener() {
         return view -> {
             // TODO: implement on click method to view/change settings
+        };
+    }
+
+    private AdapterView.OnItemClickListener colorListItemListener() {
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                PaletteColorDisplayItem item = (PaletteColorDisplayItem) adapterView.getItemAtPosition(i);
+                // flip display clause
+                item.setDisplayEditFragment(!item.isDisplayEditFragment());
+                ((ColorListAdapter)adapterView.getAdapter()).notifyDataSetChanged();
+            }
         };
     }
 
