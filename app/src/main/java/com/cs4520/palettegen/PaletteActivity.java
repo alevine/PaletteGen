@@ -1,24 +1,23 @@
 package com.cs4520.palettegen;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
-import com.cs4520.palettegen.db.Palette;
-import com.cs4520.palettegen.db.PaletteViewModel;
+import com.cs4520.palettegen.db.PaletteContract;
+import com.cs4520.palettegen.db.PaletteDbHelper;
 
 public class PaletteActivity extends AppCompatActivity {
 
     ImageView settingsButton;
     TextView paletteName;
-    PaletteViewModel paletteViewModel;
     TextView[] colors;
 
     @Override
@@ -27,8 +26,6 @@ public class PaletteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_palette);
 
         paletteName = findViewById(R.id.paletteViewTitle);
-
-        paletteViewModel = ViewModelProviders.of(PaletteActivity.this).get(PaletteViewModel.class);
 
         settingsButton = findViewById(R.id.paletteViewSettingsButton);
         settingsButton.setOnClickListener(settingsButtonListener());
@@ -51,32 +48,51 @@ public class PaletteActivity extends AppCompatActivity {
             if (extras.containsKey("paletteId")) {
                 int paletteId = extras.getInt("paletteId");
 
-                paletteViewModel.getPalette(paletteId);
+                PaletteDbHelper dbHelper = new PaletteDbHelper(PaletteActivity.this);
+                SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-                paletteViewModel.getSearchResults().observe(this, new Observer<Palette>() {
-                    @Override
-                    public void onChanged(@Nullable final Palette palette) {
-                        paletteName.setText(palette.getPaletteName());
+                String[] projection = {
+                    BaseColumns._ID,
+                    PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME,
+                    PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING
+                };
 
-                        String[] colorList = palette.getColorString().split(",");
+                // Filter results WHERE "ID" = paletteId'
+                String selection = BaseColumns._ID + " = ?";
+                String[] selectionArgs = { Integer.toString(paletteId) };
 
-                        for (int i = 0; i < 6; i++) {
-                            colors[i].setBackgroundColor(Integer.parseInt(colorList[i]));
-                            colors[i].setText("#" + Integer.toHexString(Integer.parseInt(colorList[i])).toUpperCase());
-                        }
-                    }
-                });
+                Cursor cursor = db.query(
+                        PaletteContract.PaletteEntry.TABLE_NAME,   // The table to query
+                        projection,                                // The array of columns to return (pass null to get all)
+                        selection,                                 // The columns for the WHERE clause
+                        selectionArgs,
+                        null,
+                        null,
+                        null
+                );
+
+                cursor.moveToNext();
+                String colorString = cursor.getString(cursor.getColumnIndex(PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING));
+                String name = cursor.getString(cursor.getColumnIndex(PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME));
+
+                paletteName.setText(name);
+
+                String[] colorList = colorString.split(",");
+
+                for (int i = 0; i < 6; i++) {
+                    colors[i].setBackgroundColor(Integer.parseInt(colorList[i]));
+                    colors[i].setText("#" + Integer.toHexString(Integer.parseInt(colorList[i])).toUpperCase());
+                }
+
+                cursor.close();
             }
         }
 
     }
 
     private View.OnClickListener settingsButtonListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: implement on click method to view/change settings
-            }
+        return view -> {
+            // TODO: implement on click method to view/change settings
         };
     }
 

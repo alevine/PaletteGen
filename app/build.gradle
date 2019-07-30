@@ -17,6 +17,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
 }
 
 dependencies {
@@ -31,19 +35,4 @@ dependencies {
 
     // Native Palette Library
     implementation 'androidx.palette:palette:1.0.0'
-
-    // SwipeLayout components
-//    implementation 'com.daimajia.swipelayout:library:1.2.0'
-//    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-//    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-
-    // Room components
-    def room_version = "2.1.0" // 2.1.0 for latest stable version
-
-    implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
-
-    // LifeCycle components
-    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0"
-    annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.0.0"
 }

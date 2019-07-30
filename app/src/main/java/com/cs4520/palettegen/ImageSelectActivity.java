@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -19,14 +21,12 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
-import com.cs4520.palettegen.db.PaletteViewModel;
+import com.cs4520.palettegen.db.PaletteContract;
+import com.cs4520.palettegen.db.PaletteDbHelper;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -46,7 +46,6 @@ public class ImageSelectActivity extends AppCompatActivity {
 
     private EditText uploadFromURLEditText;
     private String currentPhotoPath;
-    private PaletteViewModel paletteViewModel;
 
     private static final int REQUEST_READ_PERMISSIONS = 0;
 
@@ -60,8 +59,6 @@ public class ImageSelectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_select);
-
-        paletteViewModel = ViewModelProviders.of(ImageSelectActivity.this).get(PaletteViewModel.class);
 
         Button cameraButton = findViewById(R.id.cameraButton);
         Button uploadButton = findViewById(R.id.uploadButton);
@@ -202,43 +199,42 @@ public class ImageSelectActivity extends AppCompatActivity {
         final PaletteGenerator generator = new PaletteGenerator();
         final Intent replyIntent = new Intent();
 
-        paletteViewModel.count();
+        PaletteDbHelper dbHelper = new PaletteDbHelper(ImageSelectActivity.this);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        paletteViewModel.getTotalCount().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable final Integer count) {
-                if ((requestCode == REQUEST_IMAGE_CAPTURE || requestCode == REQUEST_URL_IMAGE)
-                        && resultCode == RESULT_OK) {
-                    replyIntent.putExtra("colorString",
-                            generator.generatePaletteColorsFromPath(currentPhotoPath));
-                    replyIntent.putExtra("paletteName", "Palette #" + count);
-                    setResult(RESULT_OK, replyIntent);
-                } else if (requestCode == REQUEST_PICK_IMAGE && resultCode == RESULT_OK) {
-                    Uri selectedImage = data.getData();
-                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+        // Use database utils to query number of entries in the palette table
+        int count = (int) DatabaseUtils.queryNumEntries(db, PaletteContract.PaletteEntry.TABLE_NAME) + 1;
 
-                    assert selectedImage != null;
-                    Cursor cursor = getContentResolver().query(selectedImage,
-                            filePathColumn, null, null, null);
+        // Based on requestCode, get the relevant content to create the palette and pass
+        // it back to the main activity
+        if ((requestCode == REQUEST_IMAGE_CAPTURE || requestCode == REQUEST_URL_IMAGE)
+                && resultCode == RESULT_OK) {
+            replyIntent.putExtra("colorString",
+                    generator.generatePaletteColorsFromPath(currentPhotoPath));
+            replyIntent.putExtra("paletteName", "Palette #" + count);
+            setResult(RESULT_OK, replyIntent);
+        } else if (requestCode == REQUEST_PICK_IMAGE && resultCode == RESULT_OK) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
-                    assert cursor != null;
-                    cursor.moveToFirst();
+            assert selectedImage != null;
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
 
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String picturePath = cursor.getString(columnIndex);
-                    cursor.close();
+            assert cursor != null;
+            cursor.moveToFirst();
 
-                    replyIntent.putExtra("colorString",
-                            generator.generatePaletteColorsFromPath(picturePath));
-                    replyIntent.putExtra("paletteName", "Palette #" + (count + 1));
-                    setResult(RESULT_OK, replyIntent);
-                }
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
 
-                // TODO: Else case for error handling
+            replyIntent.putExtra("colorString",
+                    generator.generatePaletteColorsFromPath(picturePath));
+            replyIntent.putExtra("paletteName", "Palette #" + count);
+            setResult(RESULT_OK, replyIntent);
+        }
 
-                finish();
-            }
-        });
+        finish();
     }
 
     /**

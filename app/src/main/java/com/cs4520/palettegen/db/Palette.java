@@ -1,23 +1,23 @@
 package com.cs4520.palettegen.db;
 
 import androidx.annotation.NonNull;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 
-@Entity(tableName = "palette_table")
 public class Palette {
-    @PrimaryKey(autoGenerate = true)
     private int id;
 
-    @NonNull
     private String paletteName;
 
-    @NonNull
     private String colorString;
 
     public Palette(@NonNull String colorString, @NonNull String paletteName) {
         this.paletteName = paletteName;
         this.colorString = colorString;
+    }
+
+    public Palette(@NonNull String colorString, @NonNull String paletteName, int id) {
+        this.paletteName = paletteName;
+        this.colorString = colorString;
+        this.id = id;
     }
 
     @NonNull
