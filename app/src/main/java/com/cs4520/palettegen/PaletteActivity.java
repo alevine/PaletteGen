@@ -5,20 +5,26 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.cs4520.palettegen.adapters.ColorListAdapter;
 import com.cs4520.palettegen.db.PaletteContract;
 import com.cs4520.palettegen.db.PaletteDbHelper;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class PaletteActivity extends AppCompatActivity {
 
     ImageView settingsButton;
     TextView paletteName;
-    TextView[] colors;
+    ListView colorList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,15 +40,7 @@ public class PaletteActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         Bundle extras = intent.getExtras();
-
-        colors = new TextView[6];
-
-        colors[0] = findViewById(R.id.palette1);
-        colors[1] = findViewById(R.id.palette2);
-        colors[2] = findViewById(R.id.palette3);
-        colors[3] = findViewById(R.id.palette4);
-        colors[4] = findViewById(R.id.palette5);
-        colors[5] = findViewById(R.id.palette6);
+        List<String> colors = null;
 
         if (extras != null) {
             if (extras.containsKey("paletteId")) {
@@ -77,16 +75,17 @@ public class PaletteActivity extends AppCompatActivity {
 
                 paletteName.setText(name);
 
-                String[] colorList = colorString.split(",");
-
-                for (int i = 0; i < 6; i++) {
-                    colors[i].setBackgroundColor(Integer.parseInt(colorList[i]));
-                    colors[i].setText("#" + Integer.toHexString(Integer.parseInt(colorList[i])).toUpperCase());
-                }
+                colors = Arrays.asList(colorString.split(","));
 
                 cursor.close();
             }
         }
+
+        if(colors == null) {
+            Log.e("Palette Not Found", "Palette Activity couldn't find corresponding palette.");
+        }
+        colorList = findViewById(R.id.colorList);
+        colorList.setAdapter(new ColorListAdapter(getApplicationContext(), colors));
 
     }
 

@@ -39,6 +39,16 @@ public class PaletteGenerator {
 
             i++;
         }
+        // Covers case where we find fewer than 6 palettes. We just copy the last one until we have 6.
+        int index = i-1;
+        while (i < 6) {
+            if(i == 5) {
+                colorString.append(p.getSwatches().get(index).getRgb());
+            } else {
+                colorString.append(p.getSwatches().get(index).getRgb()).append(",");
+            }
+            i++;
+        }
 
         return colorString.toString();
     }

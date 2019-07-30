@@ -7,7 +7,7 @@
     tools:context=".PaletteActivity">
 
     <RelativeLayout
-        android:background="@color/colorBlue"
+        android:background="@color/grey"
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
@@ -35,64 +35,11 @@
 
     </RelativeLayout>
 
-    <TextView
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:id="@+id/palette1"
-        android:background="@color/colorRed"
-        android:layout_weight="1"
+    <ListView
+        android:id="@+id/colorList"
         android:layout_width="match_parent"
-        android:layout_height="0dp" />
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:layout_weight="1"
-        android:background="@color/colorYellowDark"
-        android:id="@+id/palette2"
-        android:layout_width="match_parent"
-        android:layout_height="0dp" />
-
-    <TextView
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:layout_weight="1"
-        android:background="@color/colorYellow"
-        android:id="@+id/palette3"
-        android:layout_width="match_parent"
-        android:layout_height="0dp" />
-
-    <TextView
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:layout_weight="1"
-        android:background="@color/colorGreen"
-        android:id="@+id/palette4"
-        android:layout_width="match_parent"
-        android:layout_height="0dp" />
-
-    <TextView
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:layout_weight="1"
-        android:background="@color/colorBlue"
-        android:id="@+id/palette5"
-        android:layout_width="match_parent"
-        android:layout_height="0dp" />
-
-    <TextView
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:layout_weight="1"
-        android:background="@color/colorPurple"
-        android:id="@+id/palette6"
-        android:layout_width="match_parent"
-        android:layout_height="0dp" />
+    </ListView>
 
 </LinearLayout>
