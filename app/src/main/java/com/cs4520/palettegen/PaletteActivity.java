@@ -24,10 +24,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PaletteActivity extends AppCompatActivity {
+    private int paletteId;
 
-    ImageView settingsButton;
-    TextView paletteName;
-    ListView colorList;
+    private ImageView settingsButton;
+    private TextView paletteName;
+    private ListView colorList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class PaletteActivity extends AppCompatActivity {
 
         if (extras != null) {
             if (extras.containsKey("paletteId")) {
-                int paletteId = extras.getInt("paletteId");
+                paletteId = extras.getInt("paletteId");
 
                 PaletteDbHelper dbHelper = new PaletteDbHelper(PaletteActivity.this);
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -94,9 +95,8 @@ public class PaletteActivity extends AppCompatActivity {
         if(colors.size() == 0) {
             Log.e("Palette Not Found", "Palette Activity couldn't find corresponding palette.");
         } else {
-            colorList.setAdapter(new ColorListAdapter(getSupportFragmentManager(), getApplicationContext(), colors));
+            colorList.setAdapter(new ColorListAdapter(getSupportFragmentManager(), PaletteActivity.this, colors, paletteId, paletteName.getText().toString()));
         }
-
     }
 
     private View.OnClickListener settingsButtonListener() {
@@ -104,17 +104,4 @@ public class PaletteActivity extends AppCompatActivity {
             // TODO: implement on click method to view/change settings
         };
     }
-
-    private AdapterView.OnItemClickListener colorListItemListener() {
-        return new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                PaletteColorDisplayItem item = (PaletteColorDisplayItem) adapterView.getItemAtPosition(i);
-                // flip display clause
-                item.setDisplayEditFragment(!item.isDisplayEditFragment());
-                ((ColorListAdapter)adapterView.getAdapter()).notifyDataSetChanged();
-            }
-        };
-    }
-
 }

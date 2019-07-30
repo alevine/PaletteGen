@@ -30,4 +30,9 @@ public class PaletteColorDisplayItem {
     public void setDisplayEditFragment(boolean displayEditFragment) {
         this.displayEditFragment = displayEditFragment;
     }
+
+    @Override
+    public PaletteColorDisplayItem clone() {
+        return new PaletteColorDisplayItem(this.getId(), this.getColorString());
+    }
 }
