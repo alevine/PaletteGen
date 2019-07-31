@@ -97,18 +97,19 @@ public class ColorListAdapter extends BaseAdapter {
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(vh.editColorFrame.getId(), this.fragments.get(i), "fragment" + item.getId());
             ft.commit();
-
         }
 
         if (item != null) {
             vh.colorDisplay.setOnClickListener(onClickItemListener());
+
             if(this.displayColorStringMode == PaletteActivity.DISPLAY_MODE_HEX) {
-                vh.colorDisplay.setText(rgbToHex(item.getColorString()));
+                vh.colorDisplay.setText(item.getHexString());
             } else if(this.displayColorStringMode == PaletteActivity.DISPLAY_MODE_RGB) {
                 vh.colorDisplay.setText(legibleRgb(Integer.parseInt(item.getColorString())));
             } else {
                 vh.colorDisplay.setText(item.getColorString());
             }
+
             vh.colorDisplay.setBackgroundColor(Integer.parseInt(item.getColorString()));
 
             FragmentTransaction ft = fm.beginTransaction();
@@ -183,10 +184,6 @@ public class ColorListAdapter extends BaseAdapter {
             i++;
         }
         return colorStringBuilder.toString();
-    }
-
-    private String rgbToHex(String s) {
-        return "#" + Integer.toHexString(Integer.parseInt(s)).toUpperCase();
     }
 
     private String legibleRgb(int color) {

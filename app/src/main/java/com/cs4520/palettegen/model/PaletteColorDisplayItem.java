@@ -33,6 +33,14 @@ public class PaletteColorDisplayItem {
         this.displayEditFragment = displayEditFragment;
     }
 
+    public String getHexString() {
+        return this.rgbToHex(this.colorString);
+    }
+
+    private String rgbToHex(String s) {
+        return "#" + Integer.toHexString(Integer.parseInt(s)).toUpperCase().substring(2);
+    }
+
     @NonNull
     @Override
     public PaletteColorDisplayItem clone() {

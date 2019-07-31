@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/header"
+    android:background="@color/grey"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:focusableInTouchMode="true">
+
+    <EditText
+        android:id="@+id/paletteViewTitle"
+        android:textColor="@android:color/white"
+        android:background="@android:color/transparent"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:gravity="center_vertical"
+        android:layout_marginHorizontal="30dp"
+        android:layout_width="wrap_content"
+        android:maxWidth="250dp"
+        android:layout_height="match_parent"
+        android:importantForAutofill="no"
+        android:inputType="textNoSuggestions" />
+
+    <LinearLayout
+        android:layout_toStartOf="@id/paletteViewSettingsButton"
+        android:orientation="horizontal"
+        android:layout_marginEnd="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/toggleHexOptionLabel"
+            android:text="@string/toggleHexOptionLabel"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:paddingEnd="5dp"
+            android:paddingStart="0dp"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <Switch
+            android:id="@+id/viewModeToggle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/toggleRGBOptionLabel"
+            android:text="@string/toggleRGBOptionLabel"
+            android:textStyle="bold"
+            android:textColor="@color/colorAccent"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/paletteViewSettingsButton"
+        android:src="@drawable/gear"
+        android:scaleType="fitCenter"
+        android:focusable="true"
+        android:clickable="true"
+        android:layout_marginEnd="10dp"
+        android:layout_alignParentEnd="true"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/settingsButtonDesc" />
+
+</RelativeLayout>

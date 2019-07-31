@@ -1,15 +1,14 @@
 package com.cs4520.palettegen;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("PaletteMain", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -40,6 +40,11 @@ public class MainActivity extends AppCompatActivity {
         emptyText = findViewById(R.id.emptyText);
 
         paletteRecyclerView = findViewById(R.id.savedPalettesList);
+
+        // Add separator for recycler view
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(paletteRecyclerView.getContext(),
+                getRequestedOrientation());
+        paletteRecyclerView.addItemDecoration(dividerItemDecoration);
 
         // Set header and custom adapter for the ListView
         setListViewAdapter();
