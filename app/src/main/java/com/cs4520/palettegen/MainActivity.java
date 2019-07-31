@@ -17,18 +17,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.cs4520.palettegen.adapters.PaletteListAdapter;
 import com.cs4520.palettegen.adapters.SwipeToDeleteCallback;
 import com.cs4520.palettegen.db.Palette;
-import com.cs4520.palettegen.db.PaletteContract;
+import com.cs4520.palettegen.db.PaletteDbController;
 import com.cs4520.palettegen.db.PaletteDbHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private PaletteDbHelper dbHelper;
     private RecyclerView paletteRecyclerView;
     private PaletteListAdapter adapter;
     private TextView emptyText;
-    PaletteDbHelper dbHelper;
 
     public final static int NEW_PALETTE_ACTIVITY_REQUEST = 0;
 
@@ -37,9 +36,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        paletteRecyclerView = findViewById(R.id.savedPalettesList);
         dbHelper = new PaletteDbHelper(MainActivity.this);
         emptyText = findViewById(R.id.emptyText);
+
+        paletteRecyclerView = findViewById(R.id.savedPalettesList);
 
         // Set header and custom adapter for the ListView
         setListViewAdapter();
@@ -58,6 +58,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public PaletteDbHelper getDbHelper() {
+        return dbHelper;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // We update the adapter's palettes in case some have changed.
+        adapter.setPalettes(PaletteDbController.getAllPalettes(dbHelper));
+        adapter.notifyDataSetChanged();
+    }
+
     // On activity result of the generate Palette activity, insert it into the database
     // and update the resulting UI
     @Override
@@ -73,16 +86,7 @@ public class MainActivity extends AppCompatActivity {
             assert colorString != null;
             Palette palette = new Palette(colorString, paletteName);
 
-            // Insert new Palette into database, get all Palettes and update adapter
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-            // Create a new map of values, where column names are the keys
-            ContentValues values = new ContentValues();
-            values.put(PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING, colorString);
-            values.put(PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME, paletteName);
-
-            // Insert the new row, returning the primary key value of the new row
-            palette.setId((int) db.insert(PaletteContract.PaletteEntry.TABLE_NAME, null, values));
+            PaletteDbController.addPalette(palette, dbHelper);
 
             adapter.getPalettes().add(palette);
             adapter.notifyDataSetChanged();
@@ -93,26 +97,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setListViewAdapter() {
-        List<Palette> palettes = new ArrayList<>();
-
-        // Database setup stuff
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + PaletteContract.PaletteEntry.TABLE_NAME, null);
-
-        // Boilerplate code to get all Palettes from the database.
-        // Needed to show the database list on create of the main activity
-        if (cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
-                String name = cursor.getString(cursor.getColumnIndex(PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME));
-                String colorstring = cursor.getString(cursor.getColumnIndex(PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING));
-                int id = cursor.getInt(cursor.getColumnIndex(PaletteContract.PaletteEntry._ID));
-
-                Palette selected = new Palette(colorstring, name, id);
-                palettes.add(selected);
-
-                cursor.moveToNext();
-            }
-        }
+        List<Palette> palettes = PaletteDbController.getAllPalettes(dbHelper);
 
         // Create the adapter with the given palettes list, set the layout manager
         // and adapter of the recycler view
@@ -122,9 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         ItemTouchHelper itemTouchHelper = new
                 ItemTouchHelper(new SwipeToDeleteCallback(adapter));
-        itemTouchHelper.attachToRecyclerView(paletteRecyclerView);
-
-        cursor.close();
+        itemTouchHelper.attachToRecyclerView(paletteRecyclerView);;
     }
 
     private View.OnClickListener addNewPaletteListener() {
@@ -134,11 +117,9 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    // On destroy, close the helper
-    @Override protected void onDestroy() {
+    @Override
+    protected void onDestroy() {
         dbHelper.close();
         super.onDestroy();
     }
-
-
 }

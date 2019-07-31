@@ -3,9 +3,7 @@ package com.cs4520.palettegen.adapters;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +16,10 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.cs4520.palettegen.PaletteActivity;
 import com.cs4520.palettegen.R;
-import com.cs4520.palettegen.db.PaletteContract;
-import com.cs4520.palettegen.db.PaletteDbHelper;
+import com.cs4520.palettegen.db.Palette;
+import com.cs4520.palettegen.db.PaletteDbController;
 import com.cs4520.palettegen.fragments.EditSingleColorFragment;
 import com.cs4520.palettegen.model.PaletteColorDisplayItem;
 import com.google.android.material.snackbar.Snackbar;
@@ -31,6 +30,8 @@ import java.util.List;
 public class ColorListAdapter extends BaseAdapter {
     private int paletteId;
     private String paletteName;
+
+    private int displayColorStringMode;
 
     private FragmentManager fm;
     private Context context;
@@ -50,6 +51,9 @@ public class ColorListAdapter extends BaseAdapter {
         this.paletteName = paletteName;
         this.fragmentFrameIds = new ArrayList<>();
         this.fragments = new ArrayList<>();
+
+        // default to hex display
+        displayColorStringMode = 0;
     }
 
     @Override
@@ -98,7 +102,13 @@ public class ColorListAdapter extends BaseAdapter {
 
         if (item != null) {
             vh.colorDisplay.setOnClickListener(onClickItemListener());
-            vh.colorDisplay.setText(rgbToHex(item.getColorString()));
+            if(this.displayColorStringMode == PaletteActivity.DISPLAY_MODE_HEX) {
+                vh.colorDisplay.setText(rgbToHex(item.getColorString()));
+            } else if(this.displayColorStringMode == PaletteActivity.DISPLAY_MODE_RGB) {
+                vh.colorDisplay.setText(legibleRgb(Integer.parseInt(item.getColorString())));
+            } else {
+                vh.colorDisplay.setText(item.getColorString());
+            }
             vh.colorDisplay.setBackgroundColor(Integer.parseInt(item.getColorString()));
 
             FragmentTransaction ft = fm.beginTransaction();
@@ -118,64 +128,41 @@ public class ColorListAdapter extends BaseAdapter {
         this.recentlyChanged = colors.get(colorDisplayItem.getId());
         this.colors.set(colorDisplayItem.getId(), colorDisplayItem);
 
-        PaletteDbHelper dbHelper = new PaletteDbHelper(this.context);
-
-        String colorString = buildColorStringForPalette();
-
-        // Insert new Palette into database, get all Palettes and update adapter
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        // Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-        values.put(PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING, colorString);
-        values.put(PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME, paletteName);
-
-        // Define 'where' part of query.
-        String selection = PaletteContract.PaletteEntry._ID + " LIKE ?";
-
-        // Specify arguments in placeholder order.
-        String[] selectionArgs = { Integer.toString(this.paletteId) };
-
-        // Update entry for this palette.
-        db.update(PaletteContract.PaletteEntry.TABLE_NAME, values, selection, selectionArgs);
+        PaletteDbController.updatePalette(
+                paletteId,
+                new Palette(buildColorStringForPalette(), paletteName, paletteId),
+                ((PaletteActivity) (context)).getDbHelper());
 
         // Hide the editor again because we're all set editing.
         colors.get(colorDisplayItem.getId()).setDisplayEditFragment(false);
 
-        showUndoSnackbar(db);
+        showUndoSnackbar();
         this.notifyDataSetChanged();
     }
 
+    public void setDisplayMode(int i) {
+        this.displayColorStringMode = i;
+    }
+
     // Shows an "Undo" snackbar that will either go away on its own or undo the deletion
-    private void showUndoSnackbar(SQLiteDatabase db) {
+    private void showUndoSnackbar() {
         View view = ((Activity) this.context).findViewById(R.id.paletteActivity);
 
         Snackbar snackbar = Snackbar.make(view, R.string.undoColorShift,
                 Snackbar.LENGTH_LONG);
 
-        snackbar.setAction("UNDO", v -> undoDelete(db));
+        snackbar.setAction("UNDO", v -> undoChange());
         snackbar.show();
     }
 
-    private void undoDelete(SQLiteDatabase db) {
+    private void undoChange() {
         this.colors.set(this.recentlyChanged.getId(), this.recentlyChanged.clone());
         this.recentlyChanged = null;
 
-        // Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-        values.put(PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING, buildColorStringForPalette());
-        values.put(PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME, paletteName);
-
-        // Define 'where' part of query.
-        String selection = PaletteContract.PaletteEntry._ID + " LIKE ?";
-
-        // Specify arguments in placeholder order.
-        String[] selectionArgs = { Integer.toString(this.paletteId) };
-
-        // Update entry for this palette.
-        db.update(PaletteContract.PaletteEntry.TABLE_NAME, values, selection, selectionArgs);
-
-        db.close();
+        PaletteDbController.updatePalette(
+                paletteId,
+                new Palette(buildColorStringForPalette(), this.paletteName, paletteId),
+                ((PaletteActivity) (context)).getDbHelper());
 
         this.notifyDataSetChanged();
     }
@@ -200,6 +187,15 @@ public class ColorListAdapter extends BaseAdapter {
 
     private String rgbToHex(String s) {
         return "#" + Integer.toHexString(Integer.parseInt(s)).toUpperCase();
+    }
+
+    private String legibleRgb(int color) {
+        Color c = Color.valueOf(color);
+        int r, g, b;
+        r = Math.round(c.red() * 255);
+        g = Math.round(c.green() * 255);
+        b = Math.round(c.blue() * 255);
+        return "R:" + r + " G:" + g + " B:" + b;
     }
 
     private View.OnClickListener onClickItemListener() {
