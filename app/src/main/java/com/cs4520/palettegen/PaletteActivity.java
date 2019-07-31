@@ -14,7 +14,9 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.cs4520.palettegen.adapters.ColorListAdapter;
+import com.cs4520.palettegen.db.Palette;
 import com.cs4520.palettegen.db.PaletteContract;
+import com.cs4520.palettegen.db.PaletteDbController;
 import com.cs4520.palettegen.db.PaletteDbHelper;
 import com.cs4520.palettegen.model.PaletteColorDisplayItem;
 
@@ -22,21 +24,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PaletteActivity extends AppCompatActivity {
-
-    // ID of currently editing palette
+    private PaletteDbHelper dbHelper;
     private int paletteId;
+    private TextView paletteName;
+    private ListView colorList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_palette);
+        dbHelper = new PaletteDbHelper(PaletteActivity.this);
 
-        TextView paletteName = findViewById(R.id.paletteViewTitle);
+        paletteName = findViewById(R.id.paletteViewTitle);
 
         ImageView settingsButton = findViewById(R.id.paletteViewSettingsButton);
         settingsButton.setOnClickListener(settingsButtonListener());
 
-        ListView colorList = findViewById(R.id.colorList);
+        colorList = findViewById(R.id.colorList);
 
         // Get intent and given path from the camera intent
         Intent intent = getIntent();
@@ -48,43 +52,14 @@ public class PaletteActivity extends AppCompatActivity {
         if (extras != null) {
             if (extras.containsKey("paletteId")) {
                 paletteId = extras.getInt("paletteId");
-
-                PaletteDbHelper dbHelper = new PaletteDbHelper(PaletteActivity.this);
-                SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-                String[] projection = {
-                    BaseColumns._ID,
-                    PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME,
-                    PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING
-                };
-
-                // Filter results WHERE "ID" = paletteId'
-                String selection = BaseColumns._ID + " = ?";
-                String[] selectionArgs = { Integer.toString(paletteId) };
-
-                Cursor cursor = db.query(
-                        PaletteContract.PaletteEntry.TABLE_NAME,   // The table to query
-                        projection,                                // The array of columns to return (pass null to get all)
-                        selection,                                 // The columns for the WHERE clause
-                        selectionArgs,                             // The value(s) to compare for the WHERE
-                        null,
-                        null,
-                        null
-                );
-
-                cursor.moveToNext();
-                String colorString = cursor.getString(cursor.getColumnIndex(PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING));
-                String name = cursor.getString(cursor.getColumnIndex(PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME));
-
-                paletteName.setText(name);
+                Palette palette = PaletteDbController.getPalette(paletteId, dbHelper);
+                paletteName.setText(palette.getPaletteName());
 
                 int count = 0;
-                for(String s : colorString.split(",")) {
+                for(String s : palette.getColorString().split(",")) {
                     colors.add(new PaletteColorDisplayItem(count, s));
                     count++;
                 }
-
-                cursor.close();
             }
         }
 
@@ -96,9 +71,38 @@ public class PaletteActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        List<PaletteColorDisplayItem> colors = new ArrayList<>();
+        Palette palette = PaletteDbController.getPalette(paletteId, dbHelper);
+
+        paletteName.setText(palette.getPaletteName());
+
+        int count = 0;
+        for(String s : palette.getColorString().split(",")) {
+            colors.add(new PaletteColorDisplayItem(count, s));
+            count++;
+        }
+
+        ((ColorListAdapter) colorList.getAdapter()).setColors(colors);
+    }
+
+    public PaletteDbHelper getDbHelper() {
+        return dbHelper;
+    }
+
     private View.OnClickListener settingsButtonListener() {
         return view -> {
-            // TODO: implement on click method to view/change settings
+            Intent moveToEditPaletteIntent = new Intent(PaletteActivity.this, EditFullPaletteActivity.class);
+            moveToEditPaletteIntent.putExtra("paletteId", this.paletteId);
+            startActivity(moveToEditPaletteIntent);
         };
+    }
+
+    @Override
+    protected void onDestroy() {
+        dbHelper.close();
+        super.onDestroy();
     }
 }

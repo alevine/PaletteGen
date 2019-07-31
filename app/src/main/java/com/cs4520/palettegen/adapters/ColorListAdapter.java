@@ -18,9 +18,10 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.cs4520.palettegen.PaletteActivity;
 import com.cs4520.palettegen.R;
 import com.cs4520.palettegen.db.PaletteContract;
-import com.cs4520.palettegen.db.PaletteDbHelper;
+import com.cs4520.palettegen.db.PaletteDbController;
 import com.cs4520.palettegen.fragments.EditSingleColorFragment;
 import com.cs4520.palettegen.model.PaletteColorDisplayItem;
 import com.google.android.material.snackbar.Snackbar;
@@ -114,68 +115,46 @@ public class ColorListAdapter extends BaseAdapter {
         return view;
     }
 
+    public void setColors(List<PaletteColorDisplayItem> colors) {
+        this.colors = colors;
+        notifyDataSetChanged();
+    }
+
     public void colorChanged(PaletteColorDisplayItem colorDisplayItem) {
         this.recentlyChanged = colors.get(colorDisplayItem.getId());
         this.colors.set(colorDisplayItem.getId(), colorDisplayItem);
 
-        PaletteDbHelper dbHelper = new PaletteDbHelper(this.context);
-
-        String colorString = buildColorStringForPalette();
-
-        // Insert new Palette into database, get all Palettes and update adapter
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        // Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-        values.put(PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING, colorString);
-        values.put(PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME, paletteName);
-
-        // Define 'where' part of query.
-        String selection = PaletteContract.PaletteEntry._ID + " LIKE ?";
-
-        // Specify arguments in placeholder order.
-        String[] selectionArgs = { Integer.toString(this.paletteId) };
-
-        // Update entry for this palette.
-        db.update(PaletteContract.PaletteEntry.TABLE_NAME, values, selection, selectionArgs);
+        PaletteDbController.updatePalette(
+                paletteId,
+                new Palette(buildColorStringForPalette(), paletteName, paletteId),
+                ((PaletteActivity) (context)).getDbHelper());
 
         // Hide the editor again because we're all set editing.
         colors.get(colorDisplayItem.getId()).setDisplayEditFragment(false);
 
-        showUndoSnackbar(db);
+        showUndoSnackbar();
         this.notifyDataSetChanged();
     }
 
     // Shows an "Undo" snackbar that will either go away on its own or undo the deletion
-    private void showUndoSnackbar(SQLiteDatabase db) {
+    private void showUndoSnackbar() {
         View view = ((Activity) this.context).findViewById(R.id.paletteActivity);
 
         Snackbar snackbar = Snackbar.make(view, R.string.undoColorShift,
                 Snackbar.LENGTH_LONG);
 
-        snackbar.setAction("UNDO", v -> undoDelete(db));
+        snackbar.setAction("UNDO", v -> undoChange());
         snackbar.show();
     }
 
-    private void undoDelete(SQLiteDatabase db) {
+    private void undoChange() {
         this.colors.set(this.recentlyChanged.getId(), this.recentlyChanged.clone());
         this.recentlyChanged = null;
 
-        // Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-        values.put(PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING, buildColorStringForPalette());
-        values.put(PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME, paletteName);
-
-        // Define 'where' part of query.
-        String selection = PaletteContract.PaletteEntry._ID + " LIKE ?";
-
-        // Specify arguments in placeholder order.
-        String[] selectionArgs = { Integer.toString(this.paletteId) };
-
-        // Update entry for this palette.
-        db.update(PaletteContract.PaletteEntry.TABLE_NAME, values, selection, selectionArgs);
-
-        db.close();
+        PaletteDbController.updatePalette(
+                paletteId,
+                new Palette(buildColorStringForPalette(), this.paletteName, paletteId),
+                ((PaletteActivity) (context)).getDbHelper());
 
         this.notifyDataSetChanged();
     }

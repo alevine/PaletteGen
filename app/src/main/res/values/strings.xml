@@ -16,4 +16,9 @@
     <string name="saveChangesButton">Save Changes</string>
     <string name="undoColorShift">Undo color shift?</string>
     <string name="noSavedPalettes">No saved palettes found. Please select an image to create a new palette.</string>
+    <string name="hueBarLabel">H</string>
+    <string name="saturationBarLabel">S</string>
+    <string name="valueBarLabel">V</string>
+    <string name="saveChangesButtonText">Save Changes</string>
+    <string name="revertChangesButtonText">Revert Changes</string>
 </resources>

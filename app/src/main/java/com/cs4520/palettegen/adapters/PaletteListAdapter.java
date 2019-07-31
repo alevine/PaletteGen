@@ -14,10 +14,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cs4520.palettegen.MainActivity;
 import com.cs4520.palettegen.PaletteActivity;
 import com.cs4520.palettegen.R;
 import com.cs4520.palettegen.db.Palette;
 import com.cs4520.palettegen.db.PaletteContract;
+import com.cs4520.palettegen.db.PaletteDbController;
 import com.cs4520.palettegen.db.PaletteDbHelper;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -94,6 +96,10 @@ public class PaletteListAdapter extends RecyclerView.Adapter {
         return this.mPalettes;
     }
 
+    public void setPalettes(List<Palette> palettes) {
+        this.mPalettes = palettes;
+    }
+
     private class PaletteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView name;
@@ -129,52 +135,36 @@ public class PaletteListAdapter extends RecyclerView.Adapter {
 
     void deleteItem(int position) {
         this.recentlyDeleted = this.mPalettes.get(position);
+        this.recentlyDeletedPosition = position;
         this.mPalettes.remove(position);
 
-        PaletteDbHelper dbHelper = new PaletteDbHelper(this.context);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        PaletteDbController.deletePalette(this.recentlyDeleted.getId(), ((MainActivity) this.context).getDbHelper());
 
-        // Define 'where' part of query.
-        String selection = PaletteContract.PaletteEntry._ID + " LIKE ?";
-
-        // Specify arguments in placeholder order.
-        String[] selectionArgs = { Integer.toString(this.recentlyDeleted.getId()) };
-
-        // Issue SQL statement.
-        db.delete(PaletteContract.PaletteEntry.TABLE_NAME, selection, selectionArgs);
-
-        showUndoSnackbar(db);
+        showUndoSnackbar();
         notifyDataSetChanged();
 
         showEmptyTextIfNoPalettes();
     }
 
     // Shows an "Undo" snackbar that will either go away on its own or undo the deletion
-    private void showUndoSnackbar(SQLiteDatabase db) {
+    private void showUndoSnackbar() {
         View view = ((Activity) context).findViewById(R.id.mainLayout);
 
         Snackbar snackbar = Snackbar.make(view, R.string.undoDelete,
                 Snackbar.LENGTH_LONG);
 
-        snackbar.setAction("UNDO", v -> undoDelete(db));
+        snackbar.setAction("UNDO", v -> undoDelete());
         snackbar.show();
     }
 
-    private void undoDelete(SQLiteDatabase db) {
+    private void undoDelete() {
         mPalettes.add(recentlyDeletedPosition, recentlyDeleted);
 
-        // Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-        values.put(PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING, recentlyDeleted.getColorString());
-        values.put(PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME, recentlyDeleted.getPaletteName());
+        PaletteDbController.addPalette(recentlyDeleted, ((MainActivity) context).getDbHelper());
+        recentlyDeleted = null;
+        recentlyDeletedPosition = -1;
 
-        // Insert the new row, returning the primary key value of the new row
-        recentlyDeleted.setId((int) db.insert(PaletteContract.PaletteEntry.TABLE_NAME, null, values));
-
-        notifyItemInserted(recentlyDeletedPosition);
-
-        db.close();
-
+        notifyDataSetChanged();
         showEmptyTextIfNoPalettes();
     }
 

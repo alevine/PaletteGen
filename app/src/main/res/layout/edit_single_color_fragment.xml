@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/labelHue"
-        android:text="H"
+        android:text="@string/hueBarLabel"
         android:textAppearance="?android:textAppearanceMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -22,7 +22,7 @@
 
     <TextView
         android:id="@+id/labelSaturation"
-        android:text="S"
+        android:text="@string/saturationBarLabel"
         android:textAppearance="?android:textAppearanceMedium"
         android:layout_below="@id/labelHue"
         android:layout_width="wrap_content"
@@ -39,7 +39,7 @@
 
     <TextView
         android:id="@+id/labelValue"
-        android:text="V"
+        android:text="@string/valueBarLabel"
         android:textAppearance="?android:textAppearanceMedium"
         android:layout_below="@id/labelSaturation"
         android:layout_width="wrap_content"
@@ -67,7 +67,7 @@
 
         <Button
             android:id="@+id/saveChangeButton"
-            android:text="@string/saveChangesButton"
+            android:text="@string/saveChangesButtonText"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
