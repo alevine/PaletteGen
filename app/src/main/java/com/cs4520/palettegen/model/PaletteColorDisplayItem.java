@@ -3,11 +3,15 @@ package com.cs4520.palettegen.model;
 import androidx.annotation.NonNull;
 
 public class PaletteColorDisplayItem {
+    private static int hiddenIdCounter = 0;
+
+    private final int hiddenId;
     private final int id;
     private String colorString;
     private boolean displayEditFragment;
 
     public PaletteColorDisplayItem(int id, String colorString) {
+        this.hiddenId = hiddenIdCounter++;
         this.id = id;
         this.colorString = colorString;
         this.displayEditFragment = false;
@@ -45,5 +49,13 @@ public class PaletteColorDisplayItem {
     @Override
     public PaletteColorDisplayItem clone() {
         return new PaletteColorDisplayItem(this.getId(), this.getColorString());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof  PaletteColorDisplayItem) {
+            return this.hiddenId == ((PaletteColorDisplayItem) obj).hiddenId;
+        }
+        return false;
     }
 }

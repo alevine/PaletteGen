@@ -40,6 +40,15 @@ public class EditSingleColorFragment extends Fragment {
         return fragment;
     }
 
+    public void setColorDisplayItem(PaletteColorDisplayItem colorDisplayItem) {
+        this.colorDisplayItem = colorDisplayItem.clone();
+        this.newColor = new EditableColor(Integer.parseInt(colorDisplayItem.getColorString()));
+        
+        changeHueBar.setProgress(newColor.getHue());
+        changeSaturationBar.setProgress(newColor.getSaturation());
+        changeValueBar.setProgress(newColor.getValue());
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

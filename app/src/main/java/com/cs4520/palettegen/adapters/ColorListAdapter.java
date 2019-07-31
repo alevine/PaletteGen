@@ -84,6 +84,10 @@ public class ColorListAdapter extends BaseAdapter {
             vh = (ColorViewHolder) view.getTag();
         }
 
+        if(item.equals(vh.item) == false) {
+            vh.item = item;
+        }
+
         if (this.fragmentFrameIds.size() <= i) {
             int id = View.generateViewId();
             vh.editColorFrame.setId(id);
@@ -157,7 +161,9 @@ public class ColorListAdapter extends BaseAdapter {
     }
 
     private void undoChange() {
-        this.colors.set(this.recentlyChanged.getId(), this.recentlyChanged.clone());
+        int recentlyChangedId = this.recentlyChanged.getId();
+        this.colors.set(recentlyChangedId, this.recentlyChanged.clone());
+        fragments.get(recentlyChangedId).setColorDisplayItem(this.colors.get(recentlyChangedId));
         this.recentlyChanged = null;
 
         PaletteDbController.updatePalette(

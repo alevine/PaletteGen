@@ -3,10 +3,12 @@ package com.cs4520.palettegen;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 
 import com.cs4520.palettegen.db.Palette;
@@ -27,7 +29,11 @@ public class EditFullPaletteActivity extends AppCompatActivity {
     private View[] paletteColorViews;
     private SeekBar changeSaturationBar;
     private SeekBar changeValueBar;
-    private Button invertColorsButton;
+
+    private RadioGroup colorFiltersRadioGroup;
+    private static int NO_FILTER = R.id.noFilterRadioButton;
+    private static int INVERT_FILTER = R.id.invertColorsRadioButton;
+    private static int GRAYSCALE_FILTER = R.id.grayscaleColorsRadioButton;
 
     private Button revertChangesButton;
     private Button saveChangesButton;
@@ -71,6 +77,9 @@ public class EditFullPaletteActivity extends AppCompatActivity {
         changeValueBar = findViewById(R.id.changeAllValueBar);
         changeValueBar.setProgress(getAverageValue());
         changeValueBar.setOnSeekBarChangeListener(onSeekBarChangeListener());
+
+        colorFiltersRadioGroup = findViewById(R.id.filterRadioGroup);
+        colorFiltersRadioGroup.setOnCheckedChangeListener(onFilterGroupCheckedChange());
 
         revertChangesButton = findViewById(R.id.revertChangesButton);
         revertChangesButton.setOnClickListener(onRevertButtonClick());
@@ -129,6 +138,31 @@ public class EditFullPaletteActivity extends AppCompatActivity {
         updateColorViews();
     }
 
+    private RadioGroup.OnCheckedChangeListener onFilterGroupCheckedChange() {
+        return new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if(i == NO_FILTER) {
+                    for(EditableColor c : editableColors) {
+                        c.revertFilter();
+                    }
+                } else if (i == INVERT_FILTER) {
+                    for(EditableColor c : editableColors) {
+                        c.applyInvertFilter();
+                    }
+                } else if (i == GRAYSCALE_FILTER) {
+                    for(EditableColor c : editableColors) {
+                        c.applyGrayscaleFilter();
+                    }
+                } else {
+                    Log.e("Filter change failed", "Tried to change to nonexistent filter.");
+                }
+
+                updateColorViews();
+            }
+        };
+    }
+
     private View.OnClickListener onRevertButtonClick() {
         return view -> {
             paletteNameEditText.setText(palette.getPaletteName());
@@ -138,6 +172,7 @@ public class EditFullPaletteActivity extends AppCompatActivity {
             updateColorViews();
             changeSaturationBar.setProgress(getAverageSaturation());
             changeValueBar.setProgress(getAverageValue());
+            colorFiltersRadioGroup.check(NO_FILTER);
         };
     }
 
