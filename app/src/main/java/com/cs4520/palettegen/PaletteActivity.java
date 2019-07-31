@@ -7,8 +7,11 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,8 +29,15 @@ import java.util.List;
 public class PaletteActivity extends AppCompatActivity {
     private PaletteDbHelper dbHelper;
     private int paletteId;
+
+    public static int DISPLAY_MODE_HEX = 0;
+    public static int DISPLAY_MODE_RGB = 1;
+    private int colorStringDisplayMode;
+
+    private ImageView settingsButton;
     private TextView paletteName;
     private ListView colorList;
+    private Switch displayModeSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +47,13 @@ public class PaletteActivity extends AppCompatActivity {
 
         paletteName = findViewById(R.id.paletteViewTitle);
 
-        ImageView settingsButton = findViewById(R.id.paletteViewSettingsButton);
+        settingsButton = findViewById(R.id.paletteViewSettingsButton);
         settingsButton.setOnClickListener(settingsButtonListener());
 
         colorList = findViewById(R.id.colorList);
+
+        displayModeSwitch = findViewById(R.id.viewModeToggle);
+        displayModeSwitch.setOnCheckedChangeListener(onViewModeSwitchChanged());
 
         // Get intent and given path from the camera intent
         Intent intent = getIntent();
@@ -85,7 +98,7 @@ public class PaletteActivity extends AppCompatActivity {
             count++;
         }
 
-        ((ColorListAdapter) colorList.getAdapter()).setColors(colors);
+        colorList.setAdapter(new ColorListAdapter(getSupportFragmentManager(), PaletteActivity.this, colors, paletteId, palette.getPaletteName()));
     }
 
     public PaletteDbHelper getDbHelper() {
@@ -97,6 +110,17 @@ public class PaletteActivity extends AppCompatActivity {
             Intent moveToEditPaletteIntent = new Intent(PaletteActivity.this, EditFullPaletteActivity.class);
             moveToEditPaletteIntent.putExtra("paletteId", this.paletteId);
             startActivity(moveToEditPaletteIntent);
+        };
+    }
+
+    private CompoundButton.OnCheckedChangeListener onViewModeSwitchChanged() {
+        return new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                colorStringDisplayMode = b ? DISPLAY_MODE_RGB : DISPLAY_MODE_HEX;
+                ((ColorListAdapter) colorList.getAdapter()).setDisplayMode(colorStringDisplayMode);
+                ((ColorListAdapter) colorList.getAdapter()).notifyDataSetChanged();
+            }
         };
     }
 

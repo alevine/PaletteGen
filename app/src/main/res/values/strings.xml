@@ -21,4 +21,9 @@
     <string name="valueBarLabel">V</string>
     <string name="saveChangesButtonText">Save Changes</string>
     <string name="revertChangesButtonText">Revert Changes</string>
+    <string name="toggleHexOptionLabel">HEX</string>
+    <string name="toggleRGBOptionLabel">RGB</string>
+    <string name="invertColorsLabel">Inverted</string>
+    <string name="grayscaleColorsLabel">Grayscale</string>
+    <string name="noFilterColorsLabel">Normal</string>
 </resources>

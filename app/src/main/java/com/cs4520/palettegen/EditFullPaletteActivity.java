@@ -155,8 +155,11 @@ public class EditFullPaletteActivity extends AppCompatActivity {
                     }
                     i++;
                 }
+                palette.setPaletteName(paletteNameEditText.getText().toString());
                 palette.setColorString(colorStringBuilder.toString());
                 PaletteDbController.updatePalette(paletteId, palette, dbHelper);
+
+                finish();
             }
         };
     }

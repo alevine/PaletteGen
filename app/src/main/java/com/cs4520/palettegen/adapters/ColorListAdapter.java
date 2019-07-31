@@ -3,9 +3,7 @@ package com.cs4520.palettegen.adapters;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +18,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.cs4520.palettegen.PaletteActivity;
 import com.cs4520.palettegen.R;
-import com.cs4520.palettegen.db.PaletteContract;
+import com.cs4520.palettegen.db.Palette;
 import com.cs4520.palettegen.db.PaletteDbController;
 import com.cs4520.palettegen.fragments.EditSingleColorFragment;
 import com.cs4520.palettegen.model.PaletteColorDisplayItem;
@@ -32,6 +30,8 @@ import java.util.List;
 public class ColorListAdapter extends BaseAdapter {
     private int paletteId;
     private String paletteName;
+
+    private int displayColorStringMode;
 
     private FragmentManager fm;
     private Context context;
@@ -51,6 +51,9 @@ public class ColorListAdapter extends BaseAdapter {
         this.paletteName = paletteName;
         this.fragmentFrameIds = new ArrayList<>();
         this.fragments = new ArrayList<>();
+
+        // default to hex display
+        displayColorStringMode = 0;
     }
 
     @Override
@@ -99,7 +102,13 @@ public class ColorListAdapter extends BaseAdapter {
 
         if (item != null) {
             vh.colorDisplay.setOnClickListener(onClickItemListener());
-            vh.colorDisplay.setText(rgbToHex(item.getColorString()));
+            if(this.displayColorStringMode == PaletteActivity.DISPLAY_MODE_HEX) {
+                vh.colorDisplay.setText(rgbToHex(item.getColorString()));
+            } else if(this.displayColorStringMode == PaletteActivity.DISPLAY_MODE_RGB) {
+                vh.colorDisplay.setText(legibleRgb(Integer.parseInt(item.getColorString())));
+            } else {
+                vh.colorDisplay.setText(item.getColorString());
+            }
             vh.colorDisplay.setBackgroundColor(Integer.parseInt(item.getColorString()));
 
             FragmentTransaction ft = fm.beginTransaction();
@@ -113,11 +122,6 @@ public class ColorListAdapter extends BaseAdapter {
         }
 
         return view;
-    }
-
-    public void setColors(List<PaletteColorDisplayItem> colors) {
-        this.colors = colors;
-        notifyDataSetChanged();
     }
 
     public void colorChanged(PaletteColorDisplayItem colorDisplayItem) {
@@ -134,6 +138,10 @@ public class ColorListAdapter extends BaseAdapter {
 
         showUndoSnackbar();
         this.notifyDataSetChanged();
+    }
+
+    public void setDisplayMode(int i) {
+        this.displayColorStringMode = i;
     }
 
     // Shows an "Undo" snackbar that will either go away on its own or undo the deletion
@@ -179,6 +187,15 @@ public class ColorListAdapter extends BaseAdapter {
 
     private String rgbToHex(String s) {
         return "#" + Integer.toHexString(Integer.parseInt(s)).toUpperCase();
+    }
+
+    private String legibleRgb(int color) {
+        Color c = Color.valueOf(color);
+        int r, g, b;
+        r = Math.round(c.red() * 255);
+        g = Math.round(c.green() * 255);
+        b = Math.round(c.blue() * 255);
+        return "R:" + r + " G:" + g + " B:" + b;
     }
 
     private View.OnClickListener onClickItemListener() {

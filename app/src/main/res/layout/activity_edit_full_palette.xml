@@ -2,21 +2,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_margin="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".EditFullPaletteActivity">
 
     <EditText
         android:id="@+id/paletteNameEditText"
+        android:layout_margin="10dp"
         android:textAlignment="center"
         android:singleLine="true"
-        android:hint="Palette name goes here."
+        android:maxLength="20"
+        android:hint="@string/app_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <LinearLayout
         android:id="@+id/colorsInPalette"
+        android:layout_margin="10dp"
         android:orientation="horizontal"
         android:layout_below="@id/paletteNameEditText"
         android:layout_width="match_parent"
@@ -64,7 +66,8 @@
         android:id="@+id/labelSaturationBar"
         android:text="@string/saturationBarLabel"
         android:textAppearance="?android:textAppearanceLarge"
-        android:layout_marginTop="20dp"
+        android:layout_marginVertical="20dp"
+        android:layout_marginStart="20dp"
         android:layout_below="@id/colorsInPalette"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -72,6 +75,7 @@
     <SeekBar
         android:id="@+id/changeAllSaturationBar"
         android:max="255"
+        android:layout_marginEnd="20dp"
         android:layout_toEndOf="@id/labelSaturationBar"
         android:layout_alignBottom="@id/labelSaturationBar"
         android:layout_width="match_parent"
@@ -81,7 +85,7 @@
         android:id="@+id/labelValueBar"
         android:text="@string/valueBarLabel"
         android:textAppearance="?android:textAppearanceLarge"
-        android:layout_marginTop="20dp"
+        android:layout_alignStart="@id/labelSaturationBar"
         android:layout_below="@id/labelSaturationBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -89,12 +93,43 @@
     <SeekBar
         android:id="@+id/changeAllValueBar"
         android:max="255"
+        android:layout_marginEnd="20dp"
         android:layout_toEndOf="@id/labelValueBar"
         android:layout_alignBottom="@id/labelValueBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <RadioGroup
+        android:id="@+id/filterRadioGroup"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/changeAllValueBar"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/noFilterRadioButton"
+            android:text="@string/noFilterColorsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/invertColorsRadioButton"
+            android:text="@string/invertColorsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/grayscaleColorsRadioButton"
+            android:text="@string/grayscaleColorsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RadioGroup>
+
     <LinearLayout
+        style="?android:attr/buttonBarStyle"
+        android:background="@color/grey"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -103,6 +138,8 @@
         <Button
             android:id="@+id/revertChangesButton"
             android:text="@string/revertChangesButtonText"
+            style = "?android:attr/buttonBarButtonStyle"
+            android:textColor="@color/white"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
@@ -110,6 +147,8 @@
         <Button
             android:id="@+id/saveChangesButton"
             android:text="@string/saveChangesButtonText"
+            style = "?android:attr/buttonBarButtonStyle"
+            android:textColor="@color/white"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
