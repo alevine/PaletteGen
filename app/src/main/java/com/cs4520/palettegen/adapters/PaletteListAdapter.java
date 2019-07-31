@@ -145,6 +145,8 @@ public class PaletteListAdapter extends RecyclerView.Adapter {
 
         showUndoSnackbar(db);
         notifyDataSetChanged();
+
+        showEmptyTextIfNoPalettes();
     }
 
     // Shows an "Undo" snackbar that will either go away on its own or undo the deletion
@@ -172,5 +174,21 @@ public class PaletteListAdapter extends RecyclerView.Adapter {
         notifyItemInserted(recentlyDeletedPosition);
 
         db.close();
+
+        showEmptyTextIfNoPalettes();
+    }
+
+    private void showEmptyTextIfNoPalettes() {
+        RecyclerView recyclerView = ((Activity) context).findViewById(R.id.savedPalettesList);
+        TextView emptyText = ((Activity) context).findViewById(R.id.emptyText);
+
+        if (this.mPalettes.isEmpty()) {
+            recyclerView.setVisibility(View.GONE);
+            emptyText.setVisibility(View.VISIBLE);
+        }
+        else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyText.setVisibility(View.GONE);
+        }
     }
 }

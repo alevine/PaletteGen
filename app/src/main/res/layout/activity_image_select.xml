@@ -51,32 +51,32 @@
         android:textSize="15sp" />
 
     <LinearLayout
-        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_gravity="center">
 
         <EditText
             android:id="@+id/urlUpload"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white"
             android:layout_height="wrap_content"
             android:autofillHints="Image upload from URL"
             android:focusedByDefault="false"
             android:hint="@string/uploadHint"
             android:inputType="textUri"
+            android:maxWidth="250dp"
             android:nextFocusLeft="@id/urlUpload"
             android:nextFocusUp="@id/urlUpload"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
             android:textSize="20sp" />
 
         <ImageButton
             android:id="@+id/urlUploadButton"
-            android:src="@drawable/ic_upload_external"
-            android:background="@android:color/transparent"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:contentDescription="@string/urlImageDesc" />
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/urlImageDesc"
+            android:src="@drawable/ic_upload_external" />
     </LinearLayout>
 </LinearLayout>

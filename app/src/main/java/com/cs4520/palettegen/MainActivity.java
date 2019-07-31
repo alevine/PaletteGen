@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView paletteRecyclerView;
     private PaletteListAdapter adapter;
+    private TextView emptyText;
     PaletteDbHelper dbHelper;
 
     public final static int NEW_PALETTE_ACTIVITY_REQUEST = 0;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         paletteRecyclerView = findViewById(R.id.savedPalettesList);
         dbHelper = new PaletteDbHelper(MainActivity.this);
+        emptyText = findViewById(R.id.emptyText);
 
         // Set header and custom adapter for the ListView
         setListViewAdapter();
@@ -44,6 +47,15 @@ public class MainActivity extends AppCompatActivity {
         // Create onClickListener for the floating action button
         ImageView addNewPaletteButton = findViewById(R.id.addNewPaletteButton);
         addNewPaletteButton.setOnClickListener(addNewPaletteListener());
+
+        if (adapter.getPalettes().isEmpty()) {
+            paletteRecyclerView.setVisibility(View.GONE);
+            emptyText.setVisibility(View.VISIBLE);
+        }
+        else {
+            paletteRecyclerView.setVisibility(View.VISIBLE);
+            emptyText.setVisibility(View.GONE);
+        }
     }
 
     // On activity result of the generate Palette activity, insert it into the database
@@ -74,6 +86,9 @@ public class MainActivity extends AppCompatActivity {
 
             adapter.getPalettes().add(palette);
             adapter.notifyDataSetChanged();
+
+            paletteRecyclerView.setVisibility(View.VISIBLE);
+            emptyText.setVisibility(View.GONE);
         }
     }
 

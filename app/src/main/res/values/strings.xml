@@ -13,4 +13,7 @@
     <string name="savedPalettesText">Saved Palettes</string>
     <string name="imageSelectHelp">Please select an image to create its color palette.</string>
     <string name="undoDelete">Undo delete palette?</string>
+    <string name="saveChangesButton">Save Changes</string>
+    <string name="undoColorShift">Undo color shift?</string>
+    <string name="noSavedPalettes">No saved palettes found. Please select an image to create a new palette.</string>
 </resources>

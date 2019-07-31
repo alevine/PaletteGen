@@ -8,14 +8,13 @@
         android:clickable="true"
         android:focusable="true"
         android:textAlignment="center"
-        android:text="Hello?"
         android:gravity="center"
         android:textSize="35sp"
         android:textColor="@android:color/white"
         android:shadowColor="@android:color/black"
         android:shadowDx="3"
         android:shadowDy="3"
-        android:shadowRadius="3"
+        android:shadowRadius="1"
         android:layout_width="match_parent"
         android:layout_height="100dp" />
 
@@ -23,8 +22,6 @@
         android:id="@+id/editColorFrame"
         android:layout_below="@id/colorDisplay"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    </FrameLayout>
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

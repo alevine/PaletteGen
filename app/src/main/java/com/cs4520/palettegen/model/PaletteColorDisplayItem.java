@@ -1,5 +1,7 @@
 package com.cs4520.palettegen.model;
 
+import androidx.annotation.NonNull;
+
 public class PaletteColorDisplayItem {
     private final int id;
     private String colorString;
@@ -31,6 +33,7 @@ public class PaletteColorDisplayItem {
         this.displayEditFragment = displayEditFragment;
     }
 
+    @NonNull
     @Override
     public PaletteColorDisplayItem clone() {
         return new PaletteColorDisplayItem(this.getId(), this.getColorString());

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,28 +19,24 @@ import com.cs4520.palettegen.db.PaletteDbHelper;
 import com.cs4520.palettegen.model.PaletteColorDisplayItem;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PaletteActivity extends AppCompatActivity {
-    private int paletteId;
 
-    private ImageView settingsButton;
-    private TextView paletteName;
-    private ListView colorList;
+    // ID of currently editing palette
+    private int paletteId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_palette);
 
-        paletteName = findViewById(R.id.paletteViewTitle);
+        TextView paletteName = findViewById(R.id.paletteViewTitle);
 
-        settingsButton = findViewById(R.id.paletteViewSettingsButton);
+        ImageView settingsButton = findViewById(R.id.paletteViewSettingsButton);
         settingsButton.setOnClickListener(settingsButtonListener());
 
-        colorList = findViewById(R.id.colorList);
-        //colorList.setOnItemClickListener(colorListItemListener());
+        ListView colorList = findViewById(R.id.colorList);
 
         // Get intent and given path from the camera intent
         Intent intent = getIntent();
@@ -49,6 +44,7 @@ public class PaletteActivity extends AppCompatActivity {
         Bundle extras = intent.getExtras();
         List<PaletteColorDisplayItem> colors = new ArrayList<>();
 
+        /* This whole block uses the db to get the palette from the ID we send */
         if (extras != null) {
             if (extras.containsKey("paletteId")) {
                 paletteId = extras.getInt("paletteId");
@@ -70,7 +66,7 @@ public class PaletteActivity extends AppCompatActivity {
                         PaletteContract.PaletteEntry.TABLE_NAME,   // The table to query
                         projection,                                // The array of columns to return (pass null to get all)
                         selection,                                 // The columns for the WHERE clause
-                        selectionArgs,
+                        selectionArgs,                             // The value(s) to compare for the WHERE
                         null,
                         null,
                         null
@@ -92,10 +88,11 @@ public class PaletteActivity extends AppCompatActivity {
             }
         }
 
-        if(colors.size() == 0) {
+        if (colors.size() == 0) {
             Log.e("Palette Not Found", "Palette Activity couldn't find corresponding palette.");
         } else {
-            colorList.setAdapter(new ColorListAdapter(getSupportFragmentManager(), PaletteActivity.this, colors, paletteId, paletteName.getText().toString()));
+            colorList.setAdapter(new ColorListAdapter(getSupportFragmentManager(),
+                    PaletteActivity.this, colors, paletteId, paletteName.getText().toString()));
         }
     }
 

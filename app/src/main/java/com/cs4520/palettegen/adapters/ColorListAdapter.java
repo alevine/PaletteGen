@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +19,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.cs4520.palettegen.R;
-import com.cs4520.palettegen.db.Palette;
 import com.cs4520.palettegen.db.PaletteContract;
 import com.cs4520.palettegen.db.PaletteDbHelper;
 import com.cs4520.palettegen.fragments.EditSingleColorFragment;
@@ -71,7 +72,7 @@ public class ColorListAdapter extends BaseAdapter {
         ColorViewHolder vh;
         PaletteColorDisplayItem item = (PaletteColorDisplayItem) getItem(i);
 
-        if(view == null) {
+        if (view == null) {
             view = inflater.inflate(R.layout.item_color_list, viewGroup, false);
             vh = new ColorViewHolder(item, view);
             view.setTag(vh);
@@ -79,7 +80,7 @@ public class ColorListAdapter extends BaseAdapter {
             vh = (ColorViewHolder) view.getTag();
         }
 
-        if(this.fragmentFrameIds.size() <= i) {
+        if (this.fragmentFrameIds.size() <= i) {
             int id = View.generateViewId();
             vh.editColorFrame.setId(id);
             this.fragmentFrameIds.add(id);
@@ -87,7 +88,7 @@ public class ColorListAdapter extends BaseAdapter {
             vh.editColorFrame.setId(this.fragmentFrameIds.get(i));
         }
 
-        if(this.fragments.size() == i) {
+        if (this.fragments.size() == i) {
             this.fragments.add(EditSingleColorFragment.newInstance(this, item));
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(vh.editColorFrame.getId(), this.fragments.get(i), "fragment" + item.getId());
@@ -95,13 +96,14 @@ public class ColorListAdapter extends BaseAdapter {
 
         }
 
-        if(item != null) {
+        if (item != null) {
             vh.colorDisplay.setOnClickListener(onClickItemListener());
             vh.colorDisplay.setText(rgbToHex(item.getColorString()));
             vh.colorDisplay.setBackgroundColor(Integer.parseInt(item.getColorString()));
 
             FragmentTransaction ft = fm.beginTransaction();
-            if(item.isDisplayEditFragment()) {
+
+            if (item.isDisplayEditFragment()) {
                 ft.show(fragments.get(i));
             } else {
                 ft.hide(fragments.get(i));
@@ -142,15 +144,13 @@ public class ColorListAdapter extends BaseAdapter {
 
         showUndoSnackbar(db);
         this.notifyDataSetChanged();
-
-        // TODO: save the changes.
     }
 
     // Shows an "Undo" snackbar that will either go away on its own or undo the deletion
     private void showUndoSnackbar(SQLiteDatabase db) {
         View view = ((Activity) this.context).findViewById(R.id.paletteActivity);
 
-        Snackbar snackbar = Snackbar.make(view, R.string.undoDelete,
+        Snackbar snackbar = Snackbar.make(view, R.string.undoColorShift,
                 Snackbar.LENGTH_LONG);
 
         snackbar.setAction("UNDO", v -> undoDelete(db));
@@ -224,12 +224,14 @@ public class ColorListAdapter extends BaseAdapter {
     }
 
     private class ColorViewHolder {
-        public PaletteColorDisplayItem item;
-        public View view;
-        public TextView colorDisplay;
-        public FrameLayout editColorFrame;
 
-        public ColorViewHolder(PaletteColorDisplayItem item, View v) {
+        PaletteColorDisplayItem item;
+        FrameLayout editColorFrame;
+        public View view;
+        private TextView colorDisplay;
+
+
+        ColorViewHolder(PaletteColorDisplayItem item, View v) {
             this.item = item;
             this.view = v;
             this.colorDisplay = v.findViewById(R.id.colorDisplay);

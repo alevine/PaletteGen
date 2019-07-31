@@ -5,9 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
@@ -26,7 +24,6 @@ public class EditSingleColorFragment extends Fragment {
     private SeekBar changeSaturationBar;
     private SeekBar changeValueBar;
     private View editedColorView;
-    private Button saveChangesButton;
 
     private int newColor;
 
@@ -66,7 +63,7 @@ public class EditSingleColorFragment extends Fragment {
         editedColorView = v.findViewById(R.id.editedColorView);
         editedColorView.setBackgroundColor(newColor);
 
-        saveChangesButton = v.findViewById(R.id.saveChangeButton);
+        Button saveChangesButton = v.findViewById(R.id.saveChangeButton);
         saveChangesButton.setOnClickListener(onSaveChangesButtonClick());
 
         return v;
@@ -84,14 +81,12 @@ public class EditSingleColorFragment extends Fragment {
         float min = Math.min(Math.min(r, g), b);
         float max = Math.max(Math.max(r, g), b);
 
-        // set Value
+        // Set Value
         hsv[2] = Math.round(max * 255f);
 
         // Are we gray?
-        if(max - min == 0) {
+        if (max - min == 0) {
             // then we have no hue or saturation.
-            hsv[0] = 0;
-            hsv[1] = 0;
             return hsv;
         } else {
             // set Saturation
@@ -99,6 +94,7 @@ public class EditSingleColorFragment extends Fragment {
         }
 
         float hue = 0f;
+
         if(max == r) {
             hue = (g - b) / (max - min);
         } else if (max == g) {
@@ -106,7 +102,9 @@ public class EditSingleColorFragment extends Fragment {
         } else if (max == b) {
             hue = 4f + (r - g) / (max - min);
         }
+
         hue *= 60;
+
         // set Hue
         hsv[0] = Math.round(hue > 0 ? hue : hue + 360);
         return hsv;

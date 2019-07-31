@@ -21,6 +21,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <TextView
+        android:visibility="invisible"
+        android:id="@+id/emptyText"
+        android:text="@string/noSavedPalettes"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textSize="25sp"
+        android:padding="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <ImageView
         android:id="@+id/addNewPaletteButton"
         android:src="@drawable/plus"

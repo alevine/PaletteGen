@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -68,66 +67,57 @@ public class ImageSelectActivity extends AppCompatActivity {
         // Add onClick listener for the camera button
         // Uses an Intent to start the external camera Activity
         // Saves the taken picture to a file and displays it in the following Activity
-        cameraButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        cameraButton.setOnClickListener(view -> {
 
-                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                    // Create the File where the photo should go
-                    File photoFile = null;
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                // Create the File where the photo should go
+                File photoFile = null;
 
-                    try {
-                        photoFile = createImageFile();
-                    } catch (IOException ignored) {
-                        // TODO: Handle this exception
-                    }
-
-                    // Continue only if the File was successfully created
-                    if (photoFile != null) {
-                        // Use FileProvider to get the Uri for the created empty file
-                        Uri photoURI = FileProvider.getUriForFile(ImageSelectActivity.this,
-                                "com.cs4520.palettegen.android.fileprovider",
-                                photoFile);
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                    }
-
+                try {
+                    photoFile = createImageFile();
+                } catch (IOException ignored) {
+                    // TODO: Handle this exception
                 }
+
+                // Continue only if the File was successfully created
+                if (photoFile != null) {
+                    // Use FileProvider to get the Uri for the created empty file
+                    Uri photoURI = FileProvider.getUriForFile(ImageSelectActivity.this,
+                            "com.cs4520.palettegen.android.fileprovider",
+                            photoFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                }
+
             }
         });
 
         // Add onClick listener for the upload button
-        uploadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Verify that all required contact permissions have been granted.
-                if (ActivityCompat.checkSelfPermission(ImageSelectActivity.this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    // Contacts permissions have not been granted.
-                    Log.i("ImageSelectActivity",
-                            "Read permissions has NOT been granted. Requesting permissions.");
-                    requestReadPermissions();
-                } else {
+        uploadButton.setOnClickListener(view -> {
+            // Verify that all required contact permissions have been granted.
+            if (ActivityCompat.checkSelfPermission(ImageSelectActivity.this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Contacts permissions have not been granted.
+                Log.i("ImageSelectActivity",
+                        "Read permissions has NOT been granted. Requesting permissions.");
+                requestReadPermissions();
+            } else {
 
-                    // Contact permissions have been granted. Show the contacts fragment.
-                    Log.i("ImageSelectActivity",
-                            "Read permissions already granted.");
-                    Intent intent = new Intent(Intent.ACTION_PICK);
-                    intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                    startActivityForResult(intent, REQUEST_PICK_IMAGE);
-                }
+                // Contact permissions have been granted. Show the contacts fragment.
+                Log.i("ImageSelectActivity",
+                        "Read permissions already granted.");
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                startActivityForResult(intent, REQUEST_PICK_IMAGE);
             }
         });
 
         // Add onClick listener for the upload through URL button
-        uploadFromURLButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DownloadURLImageTask task = new DownloadURLImageTask();
-                task.execute(uploadFromURLEditText.getText().toString());
-            }
+        uploadFromURLButton.setOnClickListener(view -> {
+            DownloadURLImageTask task = new DownloadURLImageTask();
+            task.execute(uploadFromURLEditText.getText().toString());
         });
     }
 
@@ -149,15 +139,10 @@ public class ImageSelectActivity extends AppCompatActivity {
             // Display a SnackBar with an explanation and a button to trigger the request.
             Snackbar.make(findViewById(R.id.imageSelectLayout), "PaletteTown needs your permission to read external storage.",
                     Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Confirmed", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ActivityCompat
-                                    .requestPermissions(ImageSelectActivity.this,
-                                            new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE },
-                                            REQUEST_READ_PERMISSIONS);
-                        }
-                    })
+                    .setAction("Confirmed", view -> ActivityCompat
+                            .requestPermissions(ImageSelectActivity.this,
+                                    new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE },
+                                    REQUEST_READ_PERMISSIONS))
                     .show();
         } else {
             // Contact permissions have not been granted yet. Request them directly.
