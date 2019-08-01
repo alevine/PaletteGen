@@ -145,7 +145,7 @@ public class ImageSelectActivity extends AppCompatActivity {
                                     REQUEST_READ_PERMISSIONS))
                     .show();
         } else {
-            // Contact permissions have not been granted yet. Request them directly.
+            // Read permissions have not been granted yet. Request them directly.
             ActivityCompat.requestPermissions(ImageSelectActivity.this,
                     new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
                     REQUEST_READ_PERMISSIONS);
@@ -240,6 +240,11 @@ public class ImageSelectActivity extends AppCompatActivity {
                 Log.i("ImageSelectActivity", "READ permission has now been granted. Showing preview.");
                 Snackbar.make(findViewById(R.id.imageSelectLayout), "Permission granted!",
                         Snackbar.LENGTH_SHORT).show();
+
+                // When permissions are granted, start the upload Intent
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                startActivityForResult(intent, REQUEST_PICK_IMAGE);
             } else {
                 Log.i("ImageSelectActivity", "READ permission was NOT granted.");
                 Snackbar.make(findViewById(R.id.imageSelectLayout), "Permission not granted.",
@@ -291,7 +296,7 @@ public class ImageSelectActivity extends AppCompatActivity {
             }
 
             // Continue only if the file was created and the bitmap downloaded
-            if(imageFile != null && bm != null) {
+            if (imageFile != null && bm != null) {
                 try {
                     FileOutputStream out = new FileOutputStream(imageFile);
                     // Should have no effect on quality

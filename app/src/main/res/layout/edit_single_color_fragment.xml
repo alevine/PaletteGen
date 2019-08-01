@@ -8,6 +8,7 @@
     <TextView
         android:id="@+id/labelHue"
         android:text="@string/hueBarLabel"
+        android:paddingVertical="20dp"
         android:textAppearance="?android:textAppearanceMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -15,6 +16,7 @@
     <SeekBar
         android:id="@+id/changeHueBar"
         android:max="360"
+        android:paddingVertical="20dp"
         android:layout_toEndOf="@id/labelHue"
         android:layout_alignBottom="@id/labelHue"
         android:layout_width="match_parent"
@@ -23,6 +25,7 @@
     <TextView
         android:id="@+id/labelSaturation"
         android:text="@string/saturationBarLabel"
+        android:paddingVertical="20dp"
         android:textAppearance="?android:textAppearanceMedium"
         android:layout_below="@id/labelHue"
         android:layout_width="wrap_content"
@@ -31,6 +34,7 @@
     <SeekBar
         android:id="@+id/changeSaturationBar"
         android:max="255"
+        android:paddingVertical="20dp"
         android:layout_below="@id/changeHueBar"
         android:layout_toEndOf="@id/labelSaturation"
         android:layout_alignBottom="@id/labelSaturation"
@@ -40,6 +44,7 @@
     <TextView
         android:id="@+id/labelValue"
         android:text="@string/valueBarLabel"
+        android:paddingVertical="20dp"
         android:textAppearance="?android:textAppearanceMedium"
         android:layout_below="@id/labelSaturation"
         android:layout_width="wrap_content"
@@ -48,6 +53,7 @@
     <SeekBar
         android:id="@+id/changeValueBar"
         android:max="255"
+        android:paddingVertical="20dp"
         android:layout_below="@+id/changeSaturationBar"
         android:layout_toEndOf="@id/labelValue"
         android:layout_alignBottom="@id/labelValue"

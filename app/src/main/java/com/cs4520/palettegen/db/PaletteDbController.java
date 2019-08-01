@@ -104,7 +104,8 @@ public class PaletteDbController {
         db.update(PaletteContract.PaletteEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
-    public static void deletePalette(int paletteId, PaletteDbHelper dbHelper) {SQLiteDatabase db = dbHelper.getReadableDatabase();
+    public static void deletePalette(int paletteId, PaletteDbHelper dbHelper) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         // Define 'where' part of query.
         String selection = PaletteContract.PaletteEntry._ID + " LIKE ?";

@@ -1,9 +1,7 @@
 package com.cs4520.palettegen.adapters;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +82,7 @@ public class ColorListAdapter extends BaseAdapter {
             vh = (ColorViewHolder) view.getTag();
         }
 
-        if(item.equals(vh.item) == false) {
+        if(!item.equals(vh.item)) {
             vh.item = item;
         }
 
@@ -103,28 +101,26 @@ public class ColorListAdapter extends BaseAdapter {
             ft.commit();
         }
 
-        if (item != null) {
-            vh.colorDisplay.setOnClickListener(onClickItemListener());
+        vh.colorDisplay.setOnClickListener(onClickItemListener());
 
-            if(this.displayColorStringMode == PaletteActivity.DISPLAY_MODE_HEX) {
-                vh.colorDisplay.setText(item.getHexString());
-            } else if(this.displayColorStringMode == PaletteActivity.DISPLAY_MODE_RGB) {
-                vh.colorDisplay.setText(legibleRgb(Integer.parseInt(item.getColorString())));
-            } else {
-                vh.colorDisplay.setText(item.getColorString());
-            }
-
-            vh.colorDisplay.setBackgroundColor(Integer.parseInt(item.getColorString()));
-
-            FragmentTransaction ft = fm.beginTransaction();
-
-            if (item.isDisplayEditFragment()) {
-                ft.show(fragments.get(i));
-            } else {
-                ft.hide(fragments.get(i));
-            }
-            ft.commit();
+        if(this.displayColorStringMode == PaletteActivity.DISPLAY_MODE_HEX) {
+            vh.colorDisplay.setText(item.getHexString());
+        } else if(this.displayColorStringMode == PaletteActivity.DISPLAY_MODE_RGB) {
+            vh.colorDisplay.setText(item.getLegibleRgb());
+        } else {
+            vh.colorDisplay.setText(item.getColorString());
         }
+
+        vh.colorDisplay.setBackgroundColor(Integer.parseInt(item.getColorString()));
+
+        FragmentTransaction ft = fm.beginTransaction();
+
+        if (item.isDisplayEditFragment()) {
+            ft.show(fragments.get(i));
+        } else {
+            ft.hide(fragments.get(i));
+        }
+        ft.commit();
 
         return view;
     }
@@ -190,15 +186,6 @@ public class ColorListAdapter extends BaseAdapter {
             i++;
         }
         return colorStringBuilder.toString();
-    }
-
-    private String legibleRgb(int color) {
-        Color c = Color.valueOf(color);
-        int r, g, b;
-        r = Math.round(c.red() * 255);
-        g = Math.round(c.green() * 255);
-        b = Math.round(c.blue() * 255);
-        return "R:" + r + " G:" + g + " B:" + b;
     }
 
     private View.OnClickListener onClickItemListener() {

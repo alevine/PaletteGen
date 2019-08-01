@@ -1,5 +1,7 @@
 package com.cs4520.palettegen.model;
 
+import android.graphics.Color;
+
 import androidx.annotation.NonNull;
 
 public class PaletteColorDisplayItem {
@@ -43,6 +45,15 @@ public class PaletteColorDisplayItem {
 
     private String rgbToHex(String s) {
         return "#" + Integer.toHexString(Integer.parseInt(s)).toUpperCase().substring(2);
+    }
+
+    public String getLegibleRgb() {
+        Color c = Color.valueOf(Integer.parseInt(this.colorString));
+        int r, g, b;
+        r = Math.round(c.red() * 255);
+        g = Math.round(c.green() * 255);
+        b = Math.round(c.blue() * 255);
+        return "R:" + r + " G:" + g + " B:" + b;
     }
 
     @NonNull

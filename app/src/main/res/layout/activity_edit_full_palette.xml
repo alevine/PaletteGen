@@ -104,25 +104,29 @@
         android:layout_marginTop="20dp"
         android:layout_below="@id/changeAllValueBar"
         android:gravity="center"
-        android:layout_width="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <RadioButton
             android:id="@+id/noFilterRadioButton"
             android:text="@string/noFilterColorsLabel"
-            android:layout_width="wrap_content"
+            android:textAlignment="viewStart"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <RadioButton
             android:id="@+id/invertColorsRadioButton"
             android:text="@string/invertColorsLabel"
-            android:layout_width="wrap_content"
+            android:textAlignment="viewStart"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <RadioButton
             android:id="@+id/grayscaleColorsRadioButton"
             android:text="@string/grayscaleColorsLabel"
-            android:layout_width="wrap_content"
+            android:textAlignment="viewStart"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
     </RadioGroup>

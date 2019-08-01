@@ -28,7 +28,7 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
 
 
     public SwipeToDeleteCallback(PaletteListAdapter adapter) {
-        super(0, ItemTouchHelper.LEFT);
+        super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         mAdapter = adapter;
         icon = ContextCompat.getDrawable(mAdapter.getContext(),
                 R.drawable.ic_trash_icon);
@@ -58,7 +58,6 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
         View itemView = viewHolder.itemView;
 
         // so background is behind the rounded corners of itemView
-        int backgroundCornerOffset = 20;
 
         int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
         int iconTop = itemView.getTop() + (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
@@ -70,8 +69,16 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
             int iconRight = itemView.getRight() - iconMargin;
             icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
 
-            background.setBounds(itemView.getRight() + ((int) dX) - backgroundCornerOffset,
+            background.setBounds(itemView.getRight() + ((int) dX) ,
                     itemView.getTop(), itemView.getRight(), itemView.getBottom());
+        } else if (dX > 0) { // Swiping to the right
+            int iconLeft = itemView.getLeft() + iconMargin + icon.getIntrinsicWidth();
+            int iconRight = itemView.getLeft() + iconMargin;
+            icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+
+            background.setBounds(itemView.getLeft(), itemView.getTop(),
+                    itemView.getLeft() + ((int) dX),
+                    itemView.getBottom());
         } else { // view is unSwiped
             background.setBounds(0, 0, 0, 0);
         }

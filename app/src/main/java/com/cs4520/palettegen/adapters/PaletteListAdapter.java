@@ -161,10 +161,11 @@ public class PaletteListAdapter extends RecyclerView.Adapter {
         mPalettes.add(recentlyDeletedPosition, recentlyDeleted);
 
         PaletteDbController.addPalette(recentlyDeleted, ((MainActivity) context).getDbHelper());
+        notifyItemInserted(recentlyDeletedPosition);
+
         recentlyDeleted = null;
         recentlyDeletedPosition = -1;
 
-        notifyDataSetChanged();
         showEmptyTextIfNoPalettes();
     }
 

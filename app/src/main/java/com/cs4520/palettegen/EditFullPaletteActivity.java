@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 
@@ -34,9 +33,6 @@ public class EditFullPaletteActivity extends AppCompatActivity {
     private static int NO_FILTER = R.id.noFilterRadioButton;
     private static int INVERT_FILTER = R.id.invertColorsRadioButton;
     private static int GRAYSCALE_FILTER = R.id.grayscaleColorsRadioButton;
-
-    private Button revertChangesButton;
-    private Button saveChangesButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +77,9 @@ public class EditFullPaletteActivity extends AppCompatActivity {
         colorFiltersRadioGroup = findViewById(R.id.filterRadioGroup);
         colorFiltersRadioGroup.setOnCheckedChangeListener(onFilterGroupCheckedChange());
 
-        revertChangesButton = findViewById(R.id.revertChangesButton);
+        Button revertChangesButton = findViewById(R.id.revertChangesButton);
         revertChangesButton.setOnClickListener(onRevertButtonClick());
-        saveChangesButton = findViewById(R.id.saveChangesButton);
+        Button saveChangesButton = findViewById(R.id.saveChangesButton);
         saveChangesButton.setOnClickListener(onSaveButtonClick());
     }
 
@@ -139,27 +135,24 @@ public class EditFullPaletteActivity extends AppCompatActivity {
     }
 
     private RadioGroup.OnCheckedChangeListener onFilterGroupCheckedChange() {
-        return new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                if(i == NO_FILTER) {
-                    for(EditableColor c : editableColors) {
-                        c.revertFilter();
-                    }
-                } else if (i == INVERT_FILTER) {
-                    for(EditableColor c : editableColors) {
-                        c.applyInvertFilter();
-                    }
-                } else if (i == GRAYSCALE_FILTER) {
-                    for(EditableColor c : editableColors) {
-                        c.applyGrayscaleFilter();
-                    }
-                } else {
-                    Log.e("Filter change failed", "Tried to change to nonexistent filter.");
+        return (radioGroup, i) -> {
+            if(i == NO_FILTER) {
+                for(EditableColor c : editableColors) {
+                    c.revertFilter();
                 }
-
-                updateColorViews();
+            } else if (i == INVERT_FILTER) {
+                for(EditableColor c : editableColors) {
+                    c.applyInvertFilter();
+                }
+            } else if (i == GRAYSCALE_FILTER) {
+                for(EditableColor c : editableColors) {
+                    c.applyGrayscaleFilter();
+                }
+            } else {
+                Log.e("Filter change failed", "Tried to change to nonexistent filter.");
             }
+
+            updateColorViews();
         };
     }
 
@@ -177,25 +170,22 @@ public class EditFullPaletteActivity extends AppCompatActivity {
     }
 
     private View.OnClickListener onSaveButtonClick() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                StringBuilder colorStringBuilder = new StringBuilder();
-                int i = 0;
-                for(EditableColor c : editableColors) {
-                    if(i == 5) {
-                        colorStringBuilder.append(c.getRgb());
-                    } else {
-                        colorStringBuilder.append(c.getRgb()).append(",");
-                    }
-                    i++;
+        return view -> {
+            StringBuilder colorStringBuilder = new StringBuilder();
+            int i = 0;
+            for(EditableColor c : editableColors) {
+                if(i == 5) {
+                    colorStringBuilder.append(c.getRgb());
+                } else {
+                    colorStringBuilder.append(c.getRgb()).append(",");
                 }
-                palette.setPaletteName(paletteNameEditText.getText().toString());
-                palette.setColorString(colorStringBuilder.toString());
-                PaletteDbController.updatePalette(paletteId, palette, dbHelper);
-
-                finish();
+                i++;
             }
+            palette.setPaletteName(paletteNameEditText.getText().toString());
+            palette.setColorString(colorStringBuilder.toString());
+            PaletteDbController.updatePalette(paletteId, palette, dbHelper);
+
+            finish();
         };
     }
 

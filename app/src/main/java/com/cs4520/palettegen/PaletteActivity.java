@@ -1,16 +1,20 @@
 package com.cs4520.palettegen;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,6 +33,9 @@ import com.cs4520.palettegen.model.PaletteColorDisplayItem;
 import com.leinardi.android.speeddial.SpeedDialActionItem;
 import com.leinardi.android.speeddial.SpeedDialView;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,16 +119,18 @@ public class PaletteActivity extends AppCompatActivity {
                 Cursor cursor = db.query(
                         PaletteContract.PaletteEntry.TABLE_NAME,   // The table to query
                         projection,                                // The array of columns to return (pass null to get all)
-                        paletteSelection,                                 // The columns for the WHERE clause
-                        paletteSelectionArgs,                             // The value(s) to compare for the WHERE
+                        paletteSelection,                          // The columns for the WHERE clause
+                        paletteSelectionArgs,                      // The value(s) to compare for the WHERE
                         null,
                         null,
                         null
                 );
 
                 cursor.moveToNext();
-                String colorString = cursor.getString(cursor.getColumnIndex(PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING));
-                String name = cursor.getString(cursor.getColumnIndex(PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME));
+                String colorString = cursor.getString(
+                        cursor.getColumnIndex(PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING));
+                String name = cursor.getString(
+                        cursor.getColumnIndex(PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME));
 
                 paletteName.setText(name);
 
@@ -133,26 +142,41 @@ public class PaletteActivity extends AppCompatActivity {
                 }
 
                 speedDialView.setOnActionSelectedListener(speedDialActionItem -> {
+                    String formattedColorString = getFormattedColorString(colors);
+
                     switch (speedDialActionItem.getId()) {
                         case R.id.fab_action_copy:
                             // Copy the CSV colorstring to clipboard
                             ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                            StringBuilder toCopyHexString = new StringBuilder();
 
-                            for (PaletteColorDisplayItem p : colors) {
-                                toCopyHexString.append(p.getHexString()).append(",");
-                            }
-
-                            // cut off last comma
-                            toCopyHexString.substring(0, toCopyHexString.length() - 2);
-
-                            ClipData clip = ClipData.newPlainText("copiedPalette", toCopyHexString.toString());
+                            ClipData clip = ClipData.newPlainText("copiedPalette", formattedColorString);
                             assert clipboard != null;
                             clipboard.setPrimaryClip(clip);
-                            return true; // true to keep the Speed Dial open
+
+                            // False to close the speed dial (as confirmation?)
+                            return false;
                         case R.id.fab_action_download:
                             // Download the CSV colorstring
-                            return true;
+
+                            String paletteFileName = "test download";
+
+                            // Create the temp file for saving and write to it
+                            try {
+                                // Get the directory for the user's public downloads directory.
+                                File dir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+                                File download = new File(dir.getAbsolutePath() + paletteFileName);
+
+                                if (download.createNewFile()) {
+                                    FileOutputStream out = new FileOutputStream(download);
+                                    out.write(formattedColorString.getBytes());
+                                    out.close();
+                                }
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            return false;
                         default:
                             return false;
                     }
@@ -163,8 +187,8 @@ public class PaletteActivity extends AppCompatActivity {
                 paletteName.setOnEditorActionListener((textView, i, keyEvent) -> {
                     if (i == EditorInfo.IME_ACTION_NEXT) {
                         // Update name of palette
-                        Log.d(TAG, "hit enter");
                         updateName(db, paletteName);
+                        hideKeyboard();
                     }
                     return true;
                 });
@@ -184,7 +208,6 @@ public class PaletteActivity extends AppCompatActivity {
         super.onResume();
         List<PaletteColorDisplayItem> colors = new ArrayList<>();
         Palette palette = PaletteDbController.getPalette(paletteId, dbHelper);
-        //colorList = findViewById(R.id.colorList);
 
         paletteName.setText(palette.getPaletteName());
 
@@ -194,7 +217,8 @@ public class PaletteActivity extends AppCompatActivity {
             count++;
         }
 
-        colorList.setAdapter(new ColorListAdapter(getSupportFragmentManager(), PaletteActivity.this, colors, paletteId, palette.getPaletteName()));
+        colorList.setAdapter(new ColorListAdapter(getSupportFragmentManager(),
+                PaletteActivity.this, colors, paletteId, palette.getPaletteName()));
     }
 
     public PaletteDbHelper getDbHelper() {
@@ -239,9 +263,42 @@ public class PaletteActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        this.finish();
+    /* Gets the formatted string to copy / download from the current list of colors */
+    private String getFormattedColorString(List<PaletteColorDisplayItem> colors) {
+        StringBuilder result = new StringBuilder();
+
+        if (colorStringDisplayMode == DISPLAY_MODE_HEX) {
+            for (PaletteColorDisplayItem p : colors) {
+                result.append(p.getHexString()).append(",");
+            }
+
+            // cut off last comma
+            return result.substring(0, result.length() - 2);
+        } else {
+            for (PaletteColorDisplayItem p : colors) {
+                result.append(p.getLegibleRgb()).append(",");
+            }
+
+            // cut off last comma
+            return result.substring(0, result.length() - 2);
+        }
+    }
+
+    /* Hides the soft keyboard if it's open.
+
+       Attr: https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard */
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+
+        // Find the currently focused view, so we can grab the correct window token from it.
+        View view = this.getCurrentFocus();
+
+        // If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(this);
+        }
+
+        assert imm != null;
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
