@@ -37,6 +37,7 @@ public class ColorListAdapter extends BaseAdapter {
     private List<PaletteColorDisplayItem> colors;
     private List<Integer> fragmentFrameIds;
     private List<EditSingleColorFragment> fragments;
+    private List<TextView> colorDisplayViews;
 
     private PaletteColorDisplayItem recentlyChanged;
 
@@ -49,6 +50,7 @@ public class ColorListAdapter extends BaseAdapter {
         this.paletteName = paletteName;
         this.fragmentFrameIds = new ArrayList<>();
         this.fragments = new ArrayList<>();
+        this.colorDisplayViews = new ArrayList<>();
 
         // default to hex display
         displayColorStringMode = 0;
@@ -77,6 +79,9 @@ public class ColorListAdapter extends BaseAdapter {
         if (view == null) {
             view = inflater.inflate(R.layout.item_color_list, viewGroup, false);
             vh = new ColorViewHolder(item, view);
+            if (this.colorDisplayViews.size() == i) {
+                this.colorDisplayViews.add(vh.colorDisplay);
+            }
             view.setTag(vh);
         } else {
             vh = (ColorViewHolder) view.getTag();
@@ -139,6 +144,16 @@ public class ColorListAdapter extends BaseAdapter {
 
         showUndoSnackbar();
         this.notifyDataSetChanged();
+    }
+
+    public void colorShifted(PaletteColorDisplayItem colorDisplayItem) {
+        TextView colorDisplayView = this.colorDisplayViews.get(colorDisplayItem.getId());
+        if (this.displayColorStringMode == PaletteActivity.DISPLAY_MODE_HEX) {
+            colorDisplayView.setText(colorDisplayItem.getHexString());
+        } else if(this.displayColorStringMode == PaletteActivity.DISPLAY_MODE_RGB) {
+            colorDisplayView.setText(colorDisplayItem.getLegibleRgb());
+        }
+        colorDisplayView.setBackgroundColor(Integer.parseInt(colorDisplayItem.getColorString()));
     }
 
     public void setDisplayMode(int i) {
@@ -209,7 +224,7 @@ public class ColorListAdapter extends BaseAdapter {
         }
     }
 
-    private class ColorViewHolder {
+    public class ColorViewHolder {
 
         PaletteColorDisplayItem item;
         FrameLayout editColorFrame;

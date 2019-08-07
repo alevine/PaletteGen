@@ -1,12 +1,12 @@
 package com.cs4520.palettegen.fragments;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,7 +24,7 @@ public class EditSingleColorFragment extends Fragment {
     private SeekBar changeHueBar;
     private SeekBar changeSaturationBar;
     private SeekBar changeValueBar;
-    private View editedColorView;
+    private Button revertChangesButton;
 
     private EditableColor newColor;
 
@@ -66,13 +66,17 @@ public class EditSingleColorFragment extends Fragment {
         changeValueBar.setProgress(newColor.getValue());
         changeValueBar.setOnSeekBarChangeListener(barChangeListener());
 
-        editedColorView = v.findViewById(R.id.editedColorView);
-        editedColorView.setBackgroundColor(newColor.getRgb());
+        revertChangesButton = v.findViewById(R.id.revertChangeButton);
+        revertChangesButton.setOnClickListener(onRevertChangesButtonClick());
 
         Button saveChangesButton = v.findViewById(R.id.saveChangeButton);
         saveChangesButton.setOnClickListener(onSaveChangesButtonClick());
 
         return v;
+    }
+
+    public int getColor() {
+        return newColor.getRgb();
     }
 
     private SeekBar.OnSeekBarChangeListener barChangeListener() {
@@ -98,13 +102,26 @@ public class EditSingleColorFragment extends Fragment {
         newColor.setHue(changeHueBar.getProgress());
         newColor.setSaturation(changeSaturationBar.getProgress());
         newColor.setValue(changeValueBar.getProgress());
-        editedColorView.setBackgroundColor(newColor.getRgb());
+        colorDisplayItem.setColorString(String.valueOf(newColor.getRgb()));
+        adapter.colorShifted(colorDisplayItem);
     }
 
     private View.OnClickListener onSaveChangesButtonClick() {
         return view -> {
            colorDisplayItem.setColorString(String.valueOf(newColor.getRgb()));
+           colorDisplayItem.setOriginalColorString(colorDisplayItem.getColorString());
            adapter.colorChanged(colorDisplayItem);
+        };
+    }
+
+    private View.OnClickListener onRevertChangesButtonClick() {
+        return view -> {
+            newColor.setRgb(Integer.parseInt(colorDisplayItem.getOriginalColorString()));
+            colorDisplayItem.setColorString(colorDisplayItem.getOriginalColorString());
+            changeHueBar.setProgress(newColor.getHue());
+            changeSaturationBar.setProgress(newColor.getSaturation());
+            changeValueBar.setProgress(newColor.getValue());
+            adapter.notifyDataSetChanged();
         };
     }
 }

@@ -10,12 +10,14 @@ public class PaletteColorDisplayItem {
     private final int hiddenId;
     private final int id;
     private String colorString;
+    private String originalColorString;
     private boolean displayEditFragment;
 
     public PaletteColorDisplayItem(int id, String colorString) {
         this.hiddenId = hiddenIdCounter++;
         this.id = id;
         this.colorString = colorString;
+        this.originalColorString = colorString;
         this.displayEditFragment = false;
     }
 
@@ -27,12 +29,20 @@ public class PaletteColorDisplayItem {
         return colorString;
     }
 
+    public String getOriginalColorString() {
+        return originalColorString;
+    }
+
     public boolean isDisplayEditFragment() {
         return displayEditFragment;
     }
 
     public void setColorString(String colorString) {
         this.colorString = colorString;
+    }
+
+    public void setOriginalColorString(String originalColorString) {
+        this.originalColorString = originalColorString;
     }
 
     public void setDisplayEditFragment(boolean displayEditFragment) {
