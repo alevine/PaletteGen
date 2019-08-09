@@ -46,10 +46,6 @@ import java.util.List;
 public class PaletteActivity extends AppCompatActivity {
     private PaletteDbHelper dbHelper;
     private int paletteId;
-    private final String TAG = "PaletteActivity";
-    private PaletteDbHelper helper;
-    private SQLiteDatabase db;
-    private boolean isFABOpen = false;
     private ColorListAdapter adapter;
 
     public static int DISPLAY_MODE_HEX = 0;
@@ -101,7 +97,6 @@ public class PaletteActivity extends AppCompatActivity {
         Bundle extras = intent.getExtras();
         List<PaletteColorDisplayItem> colors = new ArrayList<>();
 
-        /* This whole block uses the db to get the palette from the ID we send */
         if (extras != null) {
             if (extras.containsKey("paletteId")) {
                 paletteId = extras.getInt("paletteId");
@@ -109,40 +104,9 @@ public class PaletteActivity extends AppCompatActivity {
                 Palette palette = PaletteDbController.getPalette(paletteId, dbHelper);
                 paletteName.setText(palette.getPaletteName());
 
-                helper = new PaletteDbHelper(PaletteActivity.this);
-                db = helper.getReadableDatabase();
-
-                String[] projection = {
-                    BaseColumns._ID,
-                    PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME,
-                    PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING
-                };
-
-                // Filter results WHERE "ID" = paletteId'
-                String paletteSelection = BaseColumns._ID + " = ?";
-                String[] paletteSelectionArgs = { Integer.toString(paletteId) };
-
-                Cursor cursor = db.query(
-                        PaletteContract.PaletteEntry.TABLE_NAME,   // The table to query
-                        projection,                                // The array of columns to return (pass null to get all)
-                        paletteSelection,                          // The columns for the WHERE clause
-                        paletteSelectionArgs,                      // The value(s) to compare for the WHERE
-                        null,
-                        null,
-                        null
-                );
-
-                cursor.moveToNext();
-                String colorString = cursor.getString(
-                        cursor.getColumnIndex(PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING));
-                String name = cursor.getString(
-                        cursor.getColumnIndex(PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME));
-
-                paletteName.setText(name);
-
                 int count = 0;
 
-                for(String s : colorString.split(",")) {
+                for(String s : palette.getColorString().split(",")) {
                     colors.add(new PaletteColorDisplayItem(count, s));
                     count++;
                 }
@@ -170,12 +134,10 @@ public class PaletteActivity extends AppCompatActivity {
                     }
                 });
 
-                cursor.close();
-
                 paletteName.setOnEditorActionListener((textView, i, keyEvent) -> {
                     if (i == EditorInfo.IME_ACTION_NEXT) {
                         // Update name of palette
-                        updateName(db, paletteName);
+                        updateName(paletteName);
                         hideKeyboard();
                     }
                     return true;
@@ -227,25 +189,24 @@ public class PaletteActivity extends AppCompatActivity {
         };
     }
 
-    private void updateName(SQLiteDatabase db, EditText paletteName) {
-        // Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-        values.put(PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME, paletteName.getText().toString());
+    private void updateName(EditText paletteName) {
+        List<PaletteColorDisplayItem> colors = adapter.getAllItems();
+        StringBuilder colorStringBuilder = new StringBuilder();
+        for (PaletteColorDisplayItem p : colors) {
+            colorStringBuilder.append(p.getColorString()).append(",");
+        }
+        String colorString = colorStringBuilder.toString();
 
-        // Define 'where' part of query.
-        String selection = PaletteContract.PaletteEntry._ID + " LIKE ?";
+        // cut off last comma
+        colorString = colorString.substring(0, colorString.length() - 1);
 
-        // Specify arguments in placeholder order.
-        String[] selectionArgs = { Integer.toString(this.paletteId) };
-
-        // Update entry for this palette.
-        db.update(PaletteContract.PaletteEntry.TABLE_NAME, values, selection, selectionArgs);
+        Palette updatedPalette = new Palette(colorString, paletteName.getText().toString(), paletteId);
+        PaletteDbController.updatePalette(paletteId, updatedPalette, dbHelper);
     }
 
     // On destroy, close the helper
     @Override protected void onDestroy() {
-        db.close();
-        helper.close();
+        dbHelper.close();
         super.onDestroy();
     }
 

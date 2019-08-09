@@ -66,6 +66,8 @@ public class ColorListAdapter extends BaseAdapter {
         return colors.get(i);
     }
 
+    public List<PaletteColorDisplayItem> getAllItems() { return colors; }
+
     @Override
     public long getItemId(int i) {
         return 0;

@@ -56,6 +56,7 @@ public class PaletteDbController {
         String colorString = cursor.getString(cursor.getColumnIndex(PaletteContract.PaletteEntry.COLUMN_NAME_COLORSTRING));
         String name = cursor.getString(cursor.getColumnIndex(PaletteContract.PaletteEntry.COLUMN_NAME_PALETTE_NAME));
         cursor.close();
+        db.close();
 
         return new Palette(colorString, name, paletteId);
     }
@@ -82,6 +83,7 @@ public class PaletteDbController {
             }
         }
         cursor.close();
+        db.close();
 
         return palettes;
     }
@@ -104,6 +106,7 @@ public class PaletteDbController {
 
         // Update entry for this palette.
         db.update(PaletteContract.PaletteEntry.TABLE_NAME, values, selection, selectionArgs);
+        db.close();
     }
 
     public static void deletePalette(int paletteId, PaletteDbHelper dbHelper) {
@@ -117,6 +120,7 @@ public class PaletteDbController {
 
         // Issue SQL statement.
         db.delete(PaletteContract.PaletteEntry.TABLE_NAME, selection, selectionArgs);
+        db.close();
     }
 
 
