@@ -20,7 +20,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -164,7 +163,7 @@ public class PaletteActivity extends AppCompatActivity {
                             return false;
                         case R.id.fab_action_download:
                             // Hacky way to get the image lol, just take a screenshot and crop it
-                            takeScreenshot();
+                            requestWritePermissions();
                             return false;
                         default:
                             return false;
@@ -332,8 +331,7 @@ public class PaletteActivity extends AppCompatActivity {
             // Check if the only required permission has been granted
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Write permission has been granted
-                Snackbar.make(findViewById(R.id.paletteActivity), "Permission granted!",
-                        Snackbar.LENGTH_SHORT).show();
+                takeScreenshot();
             } else {
                 Snackbar.make(findViewById(R.id.paletteActivity), "Permission not granted.",
                         Snackbar.LENGTH_SHORT).show();
@@ -355,9 +353,6 @@ public class PaletteActivity extends AppCompatActivity {
             SpeedDialView speedDialView = findViewById(R.id.speedDial);
             speedDialView.setVisibility(View.INVISIBLE);
 
-            RelativeLayout header = findViewById(R.id.paletteHeader);
-            header.setVisibility(View.INVISIBLE);
-
             // Hide the fragments
             this.adapter.hideAllFragments();
 
@@ -377,7 +372,6 @@ public class PaletteActivity extends AppCompatActivity {
             bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
 
             speedDialView.setVisibility(View.VISIBLE);
-            header.setVisibility(View.VISIBLE);
 
             // Show confirmation
             Toast toast = Toast.makeText(getApplicationContext(), "Image saved to downloads.", Toast.LENGTH_SHORT);
