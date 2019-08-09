@@ -123,6 +123,7 @@ public class ColorListAdapter extends BaseAdapter {
         FragmentTransaction ft = fm.beginTransaction();
 
         if (item.isDisplayEditFragment()) {
+            fragments.get(i).displayChanges();
             ft.show(fragments.get(i));
         } else {
             ft.hide(fragments.get(i));

@@ -79,6 +79,10 @@ public class EditSingleColorFragment extends Fragment {
         return newColor.getRgb();
     }
 
+    public void displayChanges() {
+        adapter.colorShifted(colorDisplayItem);
+    }
+
     private SeekBar.OnSeekBarChangeListener barChangeListener() {
         return new SeekBar.OnSeekBarChangeListener() {
             boolean userTouching = false;
