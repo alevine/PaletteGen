@@ -28,6 +28,9 @@ public class PaletteGenerator {
         int i = 0;
         StringBuilder colorString = new StringBuilder();
 
+        // Check to see if we received any palettes...
+        if( p.getSwatches().size() == 0) { return "FAIL"; }
+
         for (Palette.Swatch s : p.getSwatches()) {
             if (i == 6) {
                 break;
@@ -39,6 +42,7 @@ public class PaletteGenerator {
 
             i++;
         }
+
         // Covers case where we find fewer than 6 palettes. We just copy the last one until we have 6.
         int index = i - 1;
 

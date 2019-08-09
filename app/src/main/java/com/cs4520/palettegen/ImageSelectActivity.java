@@ -187,8 +187,14 @@ public class ImageSelectActivity extends AppCompatActivity {
         // it back to the main activity
         if ((requestCode == REQUEST_IMAGE_CAPTURE || requestCode == REQUEST_URL_IMAGE)
                 && resultCode == RESULT_OK) {
-            replyIntent.putExtra("colorString",
-                    generator.generatePaletteColorsFromPath(currentPhotoPath));
+            String paletteColors = generator.generatePaletteColorsFromPath(currentPhotoPath);
+
+            if(paletteColors.equals("FAIL")) {
+                runOnUiThread(onPaletteFailureToastRunnable());
+                return;
+            }
+
+            replyIntent.putExtra("colorString", paletteColors);
             replyIntent.putExtra("paletteName", "Palette #" + count);
             setResult(RESULT_OK, replyIntent);
         } else if (requestCode == REQUEST_PICK_IMAGE && resultCode == RESULT_OK) {
@@ -206,8 +212,14 @@ public class ImageSelectActivity extends AppCompatActivity {
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
 
-            replyIntent.putExtra("colorString",
-                    generator.generatePaletteColorsFromPath(picturePath));
+            String paletteColors = generator.generatePaletteColorsFromPath(picturePath);
+
+            if(paletteColors.equals("FAIL")) {
+                runOnUiThread(onPaletteFailureToastRunnable());
+                return;
+            }
+
+            replyIntent.putExtra("colorString", paletteColors);
             replyIntent.putExtra("paletteName", "Palette #" + count);
             setResult(RESULT_OK, replyIntent);
         }
@@ -309,6 +321,16 @@ public class ImageSelectActivity extends AppCompatActivity {
                 toast.show();
             }
         }
+    }
+
+    private Runnable onPaletteFailureToastRunnable() {
+        return new Runnable() {
+            @Override
+            public void run() {
+                Toast t = Toast.makeText(ImageSelectActivity.this, "Could not find viable colors in image. Please choose another.", Toast.LENGTH_SHORT);
+                t.show();
+            }
+        };
     }
 
 }
