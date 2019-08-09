@@ -1,11 +1,8 @@
 package com.cs4520.palettegen.adapters;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +15,7 @@ import com.cs4520.palettegen.MainActivity;
 import com.cs4520.palettegen.PaletteActivity;
 import com.cs4520.palettegen.R;
 import com.cs4520.palettegen.db.Palette;
-import com.cs4520.palettegen.db.PaletteContract;
 import com.cs4520.palettegen.db.PaletteDbController;
-import com.cs4520.palettegen.db.PaletteDbHelper;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -53,9 +48,6 @@ public class PaletteListAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (mPalettes != null) {
-            Log.d("ADAPTER", "mPalettes != null");
-            Log.d("ADAPTER", mPalettes.toString());
-
             Palette current = mPalettes.get(position);
 
             assert current != null;
@@ -69,9 +61,6 @@ public class PaletteListAdapter extends RecyclerView.Adapter {
 
             // Finally set tag of the whole layout for future reference
             ((PaletteViewHolder) holder).name.setTag(current.getId());
-        } else {
-            // Do something here when no palettes?
-            Log.d("ADAPTER", "mPalettes == null");
         }
     }
 

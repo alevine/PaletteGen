@@ -10,6 +10,7 @@
 
     <include layout="@layout/color_list_header"
         android:layout_height="50dp"
+        android:id="@+id/paletteHeader"
         android:layout_width="match_parent" />
 
     <FrameLayout

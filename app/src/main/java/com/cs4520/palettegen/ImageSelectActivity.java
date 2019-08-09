@@ -13,7 +13,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -99,15 +98,11 @@ public class ImageSelectActivity extends AppCompatActivity {
             if (ActivityCompat.checkSelfPermission(ImageSelectActivity.this,
                     Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
-                // Contacts permissions have not been granted.
-                Log.i("ImageSelectActivity",
-                        "Read permissions has NOT been granted. Requesting permissions.");
+                // Read permissions have not been granted.
                 requestReadPermissions();
             } else {
 
-                // Contact permissions have been granted. Show the contacts fragment.
-                Log.i("ImageSelectActivity",
-                        "Read permissions already granted.");
+                // Read permissions have been granted. Show the uploader.
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
                 startActivityForResult(intent, REQUEST_PICK_IMAGE);
@@ -133,8 +128,6 @@ public class ImageSelectActivity extends AppCompatActivity {
             // Provide an additional rationale to the user if the permission was not granted
             // and the user would benefit from additional context for the use of the permission.
             // For example, if the request has been denied previously.
-            Log.i("ImageSelectActivity",
-                    "Displaying read permission rationale to provide additional context.");
 
             // Display a SnackBar with an explanation and a button to trigger the request.
             Snackbar.make(findViewById(R.id.imageSelectLayout), "PaletteTown needs your permission to read external storage.",
@@ -232,12 +225,10 @@ public class ImageSelectActivity extends AppCompatActivity {
         // TODO: Don't make them click twice
         if (requestCode == REQUEST_READ_PERMISSIONS) {
             // Received permission result for read external permission.
-            Log.i("ImageSelectActivity", "Received response for read permission request.");
 
             // Check if the only required permission has been granted
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Camera permission has been granted, preview can be displayed
-                Log.i("ImageSelectActivity", "READ permission has now been granted. Showing preview.");
                 Snackbar.make(findViewById(R.id.imageSelectLayout), "Permission granted!",
                         Snackbar.LENGTH_SHORT).show();
 
@@ -246,7 +237,6 @@ public class ImageSelectActivity extends AppCompatActivity {
                 intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
                 startActivityForResult(intent, REQUEST_PICK_IMAGE);
             } else {
-                Log.i("ImageSelectActivity", "READ permission was NOT granted.");
                 Snackbar.make(findViewById(R.id.imageSelectLayout), "Permission not granted.",
                         Snackbar.LENGTH_SHORT).show();
 
@@ -282,7 +272,6 @@ public class ImageSelectActivity extends AppCompatActivity {
                 return null;
             } catch (IOException e) {
                 status = IO_ERROR;
-                Log.e("DownloadURLImageTask failed - IO open failed", e.getMessage(), e);
             }
 
             // Need to create a temporary location for the downloaded image
@@ -292,7 +281,6 @@ public class ImageSelectActivity extends AppCompatActivity {
             }
             catch (IOException e) {
                 status = IO_ERROR;
-                Log.e("DownloadURLImageTask failed - could not create file", e.getMessage(), e);
             }
 
             // Continue only if the file was created and the bitmap downloaded
@@ -306,10 +294,9 @@ public class ImageSelectActivity extends AppCompatActivity {
                     // Deliberately call OnActivityResult in case new handling is introduced there
                     onActivityResult(REQUEST_URL_IMAGE, RESULT_OK, null);
                 } catch (FileNotFoundException e) {
-                    Log.e("DownloadURLImageTask failed - file not found", e.getMessage(), e);
+                    return null;
                 } catch (IOException e) {
                     status = IO_ERROR;
-                    Log.e("DownloadURLImageTask failed - IO flush or close failed", e.getMessage(), e);
                 }
             }
             return bm;

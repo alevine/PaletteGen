@@ -1,19 +1,20 @@
 package com.cs4520.palettegen;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.cs4520.palettegen.db.Palette;
 import com.cs4520.palettegen.db.PaletteDbController;
 import com.cs4520.palettegen.db.PaletteDbHelper;
 import com.cs4520.palettegen.model.EditableColor;
+
+import java.util.Objects;
 
 public class EditFullPaletteActivity extends AppCompatActivity {
 
@@ -42,7 +43,7 @@ public class EditFullPaletteActivity extends AppCompatActivity {
         dbHelper = new PaletteDbHelper(EditFullPaletteActivity.this);
 
         if(getIntent().hasExtra("paletteId")) {
-            paletteId = getIntent().getExtras().getInt("paletteId");
+            paletteId = Objects.requireNonNull(getIntent().getExtras()).getInt("paletteId");
         }
 
         palette = PaletteDbController.getPalette(paletteId, dbHelper);
@@ -148,8 +149,6 @@ public class EditFullPaletteActivity extends AppCompatActivity {
                 for(EditableColor c : editableColors) {
                     c.applyGrayscaleFilter();
                 }
-            } else {
-                Log.e("Filter change failed", "Tried to change to nonexistent filter.");
             }
 
             updateColorViews();

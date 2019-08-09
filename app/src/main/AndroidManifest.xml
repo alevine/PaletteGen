@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.cs4520.palettegen">
+    package="com.cs4520.palettegen"
+    android:versionCode="1"
+    android:versionName="1.0">
     <!-- Uses camera feature to take pictures for palettes -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -18,7 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".EditFullPaletteActivity"></activity>
+        <activity android:name=".EditFullPaletteActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

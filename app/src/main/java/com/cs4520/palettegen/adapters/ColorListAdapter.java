@@ -160,6 +160,13 @@ public class ColorListAdapter extends BaseAdapter {
         this.displayColorStringMode = i;
     }
 
+    // Hides all color fragments for the screenshot
+    public void hideAllFragments() {
+        for (PaletteColorDisplayItem item : colors) {
+            item.setDisplayEditFragment(false);
+        }
+    }
+
     // Shows an "Undo" snackbar that will either go away on its own or undo the deletion
     private void showUndoSnackbar() {
         View view = ((Activity) this.context).findViewById(R.id.paletteActivity);

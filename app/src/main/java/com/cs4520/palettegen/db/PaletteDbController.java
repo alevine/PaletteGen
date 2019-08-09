@@ -25,6 +25,8 @@ public class PaletteDbController {
 
         // Insert the new row, returning the primary key value of the new row
         palette.setId((int) db.insert(PaletteContract.PaletteEntry.TABLE_NAME, null, values));
+
+        db.close();
     }
 
     public static Palette getPalette(int paletteId, PaletteDbHelper dbHelper) {
@@ -116,4 +118,6 @@ public class PaletteDbController {
         // Issue SQL statement.
         db.delete(PaletteContract.PaletteEntry.TABLE_NAME, selection, selectionArgs);
     }
+
+
 }

@@ -3,7 +3,6 @@ package com.cs4520.palettegen.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class PaletteDbHelper extends SQLiteOpenHelper {
 
@@ -17,14 +16,12 @@ public class PaletteDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d("DB_HELPER", "On create db");
         db.execSQL(PaletteContract.SQL_CREATE_ENTRIES);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         // Upgrade policy is to simply to discard the data and start over
-        Log.d("DB_HELPER", "On upgrade delete");
         db.execSQL(PaletteContract.SQL_DELETE_ENTRIES);
         onCreate(db);
     }

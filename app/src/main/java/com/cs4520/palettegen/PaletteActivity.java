@@ -1,17 +1,18 @@
 package com.cs4520.palettegen;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.BaseColumns;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -19,10 +20,14 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.cs4520.palettegen.adapters.ColorListAdapter;
 import com.cs4520.palettegen.db.Palette;
@@ -30,12 +35,12 @@ import com.cs4520.palettegen.db.PaletteContract;
 import com.cs4520.palettegen.db.PaletteDbController;
 import com.cs4520.palettegen.db.PaletteDbHelper;
 import com.cs4520.palettegen.model.PaletteColorDisplayItem;
+import com.google.android.material.snackbar.Snackbar;
 import com.leinardi.android.speeddial.SpeedDialActionItem;
 import com.leinardi.android.speeddial.SpeedDialView;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,9 +51,11 @@ public class PaletteActivity extends AppCompatActivity {
     private PaletteDbHelper helper;
     private SQLiteDatabase db;
     private boolean isFABOpen = false;
+    private ColorListAdapter adapter;
 
     public static int DISPLAY_MODE_HEX = 0;
     public static int DISPLAY_MODE_RGB = 1;
+    private static final int REQUEST_WRITE_PERMISSIONS = 0;
     private int colorStringDisplayMode;
 
     private TextView paletteName;
@@ -85,7 +92,7 @@ public class PaletteActivity extends AppCompatActivity {
         // Add download item
         speedDialView.addActionItem(
                 new SpeedDialActionItem.Builder(R.id.fab_action_download, R.drawable.ic_download_fab)
-                        .setLabel("Download CSV")
+                        .setLabel("Save as Image")
                         .create()
         );
 
@@ -156,26 +163,8 @@ public class PaletteActivity extends AppCompatActivity {
                             // False to close the speed dial (as confirmation?)
                             return false;
                         case R.id.fab_action_download:
-                            // Download the CSV colorstring
-
-                            String paletteFileName = "test download";
-
-                            // Create the temp file for saving and write to it
-                            try {
-                                // Get the directory for the user's public downloads directory.
-                                File dir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-                                File download = new File(dir.getAbsolutePath() + paletteFileName);
-
-                                if (download.createNewFile()) {
-                                    FileOutputStream out = new FileOutputStream(download);
-                                    out.write(formattedColorString.getBytes());
-                                    out.close();
-                                }
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
+                            // Hacky way to get the image lol, just take a screenshot and crop it
+                            takeScreenshot();
                             return false;
                         default:
                             return false;
@@ -195,12 +184,10 @@ public class PaletteActivity extends AppCompatActivity {
             }
         }
 
-        if (colors.size() == 0) {
-            Log.e("Palette Not Found", "Palette Activity couldn't find corresponding palette.");
-        } else {
-            colorList.setAdapter(new ColorListAdapter(getSupportFragmentManager(),
-                    PaletteActivity.this, colors, paletteId, paletteName.getText().toString()));
-        }
+        adapter = new ColorListAdapter(getSupportFragmentManager(),
+                PaletteActivity.this, colors, paletteId, paletteName.getText().toString());
+
+        colorList.setAdapter(adapter);
     }
 
     @Override
@@ -300,5 +287,107 @@ public class PaletteActivity extends AppCompatActivity {
 
         assert imm != null;
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    /**
+     * Requests the Write External Storage permissions.
+     * If the permission has been denied previously, a SnackBar (yum!) will prompt the user to grant the
+     * permission, otherwise it is requested directly.
+     */
+    private void requestWritePermissions() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(PaletteActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+            // Provide an additional rationale to the user if the permission was not granted
+            // and the user would benefit from additional context for the use of the permission.
+            // For example, if the request has been denied previously.
+
+            // Display a SnackBar with an explanation and a button to trigger the request.
+            Snackbar.make(findViewById(R.id.paletteActivity), "PaletteTown needs your permission to write to external storage.",
+                    Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Confirmed", view -> ActivityCompat
+                            .requestPermissions(PaletteActivity.this,
+                                    new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                                    REQUEST_WRITE_PERMISSIONS))
+                    .show();
+        } else {
+            // Write permissions have not been granted yet. Request them directly.
+            ActivityCompat.requestPermissions(PaletteActivity.this,
+                    new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                    REQUEST_WRITE_PERMISSIONS);
+        }
+    }
+
+    /**
+     * Callback received when a permissions request has been completed.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+
+        // TODO: Don't make them click twice
+        if (requestCode == REQUEST_WRITE_PERMISSIONS) {
+            // Received permission result for write external permission.
+
+            // Check if the only required permission has been granted
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Write permission has been granted
+                Snackbar.make(findViewById(R.id.paletteActivity), "Permission granted!",
+                        Snackbar.LENGTH_SHORT).show();
+            } else {
+                Snackbar.make(findViewById(R.id.paletteActivity), "Permission not granted.",
+                        Snackbar.LENGTH_SHORT).show();
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    private void takeScreenshot() {
+        try {
+            // image naming and path  to include sd card  appending name you choose for file
+            String mPath = Environment.getExternalStorageDirectory().toString()
+                    + "/Download/"
+                    + this.paletteName.getText() // name of palette for the file
+                    + ".jpg";
+
+            // Hide various components for the screenshot
+            SpeedDialView speedDialView = findViewById(R.id.speedDial);
+            speedDialView.setVisibility(View.INVISIBLE);
+
+            RelativeLayout header = findViewById(R.id.paletteHeader);
+            header.setVisibility(View.INVISIBLE);
+
+            // Hide the fragments
+            this.adapter.hideAllFragments();
+
+            // create bitmap screen capture
+            View v1 = getWindow().getDecorView().getRootView();
+            v1.setDrawingCacheEnabled(true);
+            Bitmap base = Bitmap.createBitmap(v1.getDrawingCache());
+            v1.setDrawingCacheEnabled(false);
+
+            // crop the top!
+            Bitmap bitmap = Bitmap.createBitmap(base, 0, 200, base.getWidth(), base.getHeight() - 300);
+
+            File imageFile = new File(mPath);
+
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+
+            speedDialView.setVisibility(View.VISIBLE);
+            header.setVisibility(View.VISIBLE);
+
+            // Show confirmation
+            Toast toast = Toast.makeText(getApplicationContext(), "Image saved to downloads.", Toast.LENGTH_SHORT);
+            toast.show();
+
+            outputStream.flush();
+            outputStream.close();
+        } catch (Throwable e) {
+            // Several error may come out with file handling or DOM
+            e.printStackTrace();
+        }
     }
 }
