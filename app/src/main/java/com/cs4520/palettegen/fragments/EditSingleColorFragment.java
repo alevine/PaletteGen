@@ -81,19 +81,24 @@ public class EditSingleColorFragment extends Fragment {
 
     private SeekBar.OnSeekBarChangeListener barChangeListener() {
         return new SeekBar.OnSeekBarChangeListener() {
+            boolean userTouching = false;
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                updateNewColor();
+                if(userTouching) {
+                    updateNewColor();
+                }
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                // Do nothing.
+                userTouching = true;
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 updateNewColor();
+                userTouching = false;
             }
         };
     }

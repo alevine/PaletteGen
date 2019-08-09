@@ -108,17 +108,24 @@ public class EditFullPaletteActivity extends AppCompatActivity {
 
     private SeekBar.OnSeekBarChangeListener onSeekBarChangeListener() {
         return new SeekBar.OnSeekBarChangeListener() {
+            boolean userTouching = false;
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                registerChangeColors();
+                if (userTouching) {
+                    registerChangeColors();
+                }
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) { }
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                userTouching = true;
+            }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 registerChangeColors();
+                userTouching = false;
             }
         };
     }

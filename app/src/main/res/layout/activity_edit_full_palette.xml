@@ -5,14 +5,29 @@
     android:layout_height="match_parent"
     tools:context=".EditFullPaletteActivity">
 
+    <TextView
+        android:id="@+id/EditFullPaletteTitle"
+        android:text="@string/editFullPaletteTitle"
+        android:textSize="35sp"
+        android:paddingVertical="35dp"
+        android:textColor="@color/white"
+        android:background="@color/colorPrimaryDark"
+        android:fontFamily="sans-serif-smallcaps"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <EditText
         android:id="@+id/paletteNameEditText"
         android:layout_margin="10dp"
         android:textAlignment="center"
+        android:textSize="25dp"
         android:singleLine="true"
         android:maxLength="20"
         android:inputType="textNoSuggestions"
         android:hint="@string/app_name"
+        android:layout_below="@id/EditFullPaletteTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -22,43 +37,43 @@
         android:orientation="horizontal"
         android:layout_below="@id/paletteNameEditText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="65dp">
 
         <View
             android:id="@+id/paletteColor1"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="60dp"/>
+            android:layout_height="match_parent"/>
 
         <View
             android:id="@+id/paletteColor2"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="60dp"/>
+            android:layout_height="match_parent"/>
 
         <View
             android:id="@+id/paletteColor3"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="60dp"/>
+            android:layout_height="match_parent"/>
 
         <View
             android:id="@+id/paletteColor4"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="60dp"/>
+            android:layout_height="match_parent"/>
 
         <View
             android:id="@+id/paletteColor5"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="60dp"/>
+            android:layout_height="match_parent"/>
 
         <View
             android:id="@+id/paletteColor6"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="60dp"/>
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 
@@ -101,16 +116,19 @@
 
     <RadioGroup
         android:id="@+id/filterRadioGroup"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:layout_below="@id/changeAllValueBar"
         android:gravity="center"
         android:layout_centerHorizontal="true"
+        android:checkedButton="@id/noFilterRadioButton"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <RadioButton
             android:id="@+id/noFilterRadioButton"
             android:text="@string/noFilterColorsLabel"
+            android:layout_marginVertical="10dp"
             android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -118,6 +136,7 @@
         <RadioButton
             android:id="@+id/invertColorsRadioButton"
             android:text="@string/invertColorsLabel"
+            android:layout_marginVertical="10dp"
             android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -125,6 +144,7 @@
         <RadioButton
             android:id="@+id/grayscaleColorsRadioButton"
             android:text="@string/grayscaleColorsLabel"
+            android:layout_marginVertical="10dp"
             android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

@@ -26,4 +26,5 @@
     <string name="invertColorsLabel">Inverted</string>
     <string name="grayscaleColorsLabel">Grayscale</string>
     <string name="noFilterColorsLabel">Normal</string>
+    <string name="editFullPaletteTitle">Edit Palette</string>
 </resources>
