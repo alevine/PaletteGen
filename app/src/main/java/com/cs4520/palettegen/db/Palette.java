@@ -2,7 +2,7 @@ package com.cs4520.palettegen.db;
 
 import androidx.annotation.NonNull;
 
-public class Palette {
+public class Palette implements Comparable<Palette> {
     private int id;
 
     private String paletteName;
@@ -44,5 +44,10 @@ public class Palette {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public int compareTo(Palette palette) {
+        return this.paletteName.toLowerCase().compareTo(palette.paletteName.toLowerCase());
     }
 }

@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
         // We update the adapter's palettes in case some have changed.
         adapter.setPalettes(PaletteDbController.getAllPalettes(dbHelper));
-        adapter.notifyDataSetChanged();
+        adapter.notifyDataSetChangedAndSort();
     }
 
     // On activity result of the generate Palette activity, insert it into the database

@@ -19,6 +19,7 @@ import com.cs4520.palettegen.db.PaletteDbController;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -37,6 +38,7 @@ public class PaletteListAdapter extends RecyclerView.Adapter {
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
         this.mPalettes = palettes;
+        sortPalettesAlphabetically();
     }
 
     @NonNull
@@ -87,6 +89,7 @@ public class PaletteListAdapter extends RecyclerView.Adapter {
 
     public void setPalettes(List<Palette> palettes) {
         this.mPalettes = palettes;
+        sortPalettesAlphabetically();
     }
 
     private class PaletteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -148,6 +151,7 @@ public class PaletteListAdapter extends RecyclerView.Adapter {
 
     private void undoDelete() {
         mPalettes.add(recentlyDeletedPosition, recentlyDeleted);
+        sortPalettesAlphabetically();
 
         PaletteDbController.addPalette(recentlyDeleted, ((MainActivity) context).getDbHelper());
         notifyItemInserted(recentlyDeletedPosition);
@@ -170,5 +174,14 @@ public class PaletteListAdapter extends RecyclerView.Adapter {
             recyclerView.setVisibility(View.VISIBLE);
             emptyText.setVisibility(View.GONE);
         }
+    }
+
+    private void sortPalettesAlphabetically() {
+        mPalettes.sort(Palette::compareTo);
+    }
+
+    public void notifyDataSetChangedAndSort() {
+        sortPalettesAlphabetically();
+        notifyDataSetChanged();
     }
 }
