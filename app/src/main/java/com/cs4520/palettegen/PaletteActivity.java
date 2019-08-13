@@ -313,13 +313,12 @@ public class PaletteActivity extends AppCompatActivity {
             this.adapter.hideAllFragments();
 
             // create bitmap screen capture
-            View v1 = getWindow().getDecorView().getRootView();
-            v1.setDrawingCacheEnabled(true);
-            Bitmap base = Bitmap.createBitmap(v1.getDrawingCache());
-            v1.setDrawingCacheEnabled(false);
+            colorList.setDrawingCacheEnabled(true);
+            Bitmap base = Bitmap.createBitmap(colorList.getDrawingCache());
+            colorList.setDrawingCacheEnabled(false);
 
             // crop the top!
-            Bitmap bitmap = Bitmap.createBitmap(base, 0, 200, base.getWidth(), base.getHeight() - 300);
+            Bitmap bitmap = Bitmap.createBitmap(base, 0, 0, base.getWidth(), base.getHeight());
 
             File imageFile = new File(mPath);
 
